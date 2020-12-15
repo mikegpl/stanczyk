@@ -2,15 +2,20 @@ from concurrent import futures
 
 import grpc
 
+from face_detector import FaceDetector
 from generated.stanczyk_pb2 import FaceDetectionResult, DetectedFaceData, StanczykRequest
 from generated.stanczyk_pb2_grpc import StanczykServerServicer, add_StanczykServerServicer_to_server
 
 
 class FacesGrpcService(StanczykServerServicer):
+    def __init__(self):
+        self.detector = FaceDetector()
+
     def FindFaces(self, request: StanczykRequest, context):
-        result = FaceDetectionResult()
-        result.data.append(DetectedFaceData(x=0, y=1, w=100, h=100))
-        return result
+        faces = self.detector.from_file("../resources/bill.jpeg")
+        faces = [DetectedFaceData(x=face_x, y=face_y, w=face_w, h=face_h)
+                 for (face_x, face_y, face_w, face_h) in faces]
+        return FaceDetectionResult(data=faces)
 
 
 class Server:
