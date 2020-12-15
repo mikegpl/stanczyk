@@ -18,7 +18,7 @@ class StanczykServerStub(object):
         self.FindFaces = channel.unary_unary(
                 '/stanczyk.StanczykServer/FindFaces',
                 request_serializer=stanczyk__pb2.StanczykRequest.SerializeToString,
-                response_deserializer=stanczyk__pb2.StanczykResponse.FromString,
+                response_deserializer=stanczyk__pb2.FaceDetectionResult.FromString,
                 )
 
 
@@ -39,7 +39,7 @@ def add_StanczykServerServicer_to_server(servicer, server):
             'FindFaces': grpc.unary_unary_rpc_method_handler(
                     servicer.FindFaces,
                     request_deserializer=stanczyk__pb2.StanczykRequest.FromString,
-                    response_serializer=stanczyk__pb2.StanczykResponse.SerializeToString,
+                    response_serializer=stanczyk__pb2.FaceDetectionResult.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -65,6 +65,6 @@ class StanczykServer(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/stanczyk.StanczykServer/FindFaces',
             stanczyk__pb2.StanczykRequest.SerializeToString,
-            stanczyk__pb2.StanczykResponse.FromString,
+            stanczyk__pb2.FaceDetectionResult.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

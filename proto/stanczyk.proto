@@ -7,6 +7,18 @@ message StanczykRequest {
   string message = 1;
 }
 
+
+message FaceDetectionResult {
+  repeated DetectedFaceData data = 1;
+}
+
+message DetectedFaceData {
+  int64 x = 1;
+  int64 y = 2;
+  int64 w = 3;
+  int64 h = 4;
+}
+
 // The response message containing the original message.
 message StanczykResponse {
   string message = 1;
@@ -15,5 +27,5 @@ message StanczykResponse {
 // The echo service definition.
 service StanczykServer {
   // Echo back reply.
-  rpc FindFaces (StanczykRequest) returns (StanczykResponse) {}
+  rpc FindFaces (StanczykRequest) returns (FaceDetectionResult) {}
 }
