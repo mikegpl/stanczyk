@@ -1,1 +1,0 @@
-print("Stańczyk is here")
