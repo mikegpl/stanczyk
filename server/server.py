@@ -12,7 +12,7 @@ class FacesGrpcService(StanczykServerServicer):
         self.detector = FaceDetector()
 
     def FindFaces(self, request: StanczykRequest, context):
-        faces = self.detector.from_file("../resources/bill.jpeg")
+        faces = self.detector.from_base64_jpeg(request.base64Image)
         faces = [DetectedFaceData(x=face_x, y=face_y, w=face_w, h=face_h)
                  for (face_x, face_y, face_w, face_h) in faces]
         return FaceDetectionResult(data=faces)
