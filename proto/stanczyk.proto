@@ -1,0 +1,19 @@
+// echo.proto
+syntax = "proto3";
+package stanczyk;
+
+// The request message containing the user's message.
+message StanczykRequest {
+  string message = 1;
+}
+
+// The response message containing the original message.
+message StanczykResponse {
+  string message = 1;
+}
+
+// The echo service definition.
+service StanczykServer {
+  // Echo back reply.
+  rpc FindFaces (StanczykRequest) returns (StanczykResponse) {}
+}
