@@ -5,9 +5,69 @@ import grpc
 from . import stanczyk_pb2 as stanczyk__pb2
 
 
-class StanczykServerStub(object):
-    """The echo service definition.
-    """
+class StanczykKnowledgeExchangeServiceStub(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.ExchangeKnowledge = channel.unary_unary(
+                '/stanczyk.StanczykKnowledgeExchangeService/ExchangeKnowledge',
+                request_serializer=stanczyk__pb2.DeviceExecutorMetadata.SerializeToString,
+                response_deserializer=stanczyk__pb2.CloudExecutorMetadata.FromString,
+                )
+
+
+class StanczykKnowledgeExchangeServiceServicer(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def ExchangeKnowledge(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_StanczykKnowledgeExchangeServiceServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'ExchangeKnowledge': grpc.unary_unary_rpc_method_handler(
+                    servicer.ExchangeKnowledge,
+                    request_deserializer=stanczyk__pb2.DeviceExecutorMetadata.FromString,
+                    response_serializer=stanczyk__pb2.CloudExecutorMetadata.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'stanczyk.StanczykKnowledgeExchangeService', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+
+
+ # This class is part of an EXPERIMENTAL API.
+class StanczykKnowledgeExchangeService(object):
+    """Missing associated documentation comment in .proto file."""
+
+    @staticmethod
+    def ExchangeKnowledge(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/stanczyk.StanczykKnowledgeExchangeService/ExchangeKnowledge',
+            stanczyk__pb2.DeviceExecutorMetadata.SerializeToString,
+            stanczyk__pb2.CloudExecutorMetadata.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+
+class StanczykTaskExecutionServiceStub(object):
+    """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
         """Constructor.
@@ -16,41 +76,54 @@ class StanczykServerStub(object):
             channel: A grpc.Channel.
         """
         self.FindFaces = channel.unary_unary(
-                '/stanczyk.StanczykServer/FindFaces',
-                request_serializer=stanczyk__pb2.StanczykRequest.SerializeToString,
-                response_deserializer=stanczyk__pb2.FaceDetectionResult.FromString,
+                '/stanczyk.StanczykTaskExecutionService/FindFaces',
+                request_serializer=stanczyk__pb2.FindRequest.SerializeToString,
+                response_deserializer=stanczyk__pb2.FindResult.FromString,
+                )
+        self.FindFacesAndExchangeKnowledge = channel.unary_unary(
+                '/stanczyk.StanczykTaskExecutionService/FindFacesAndExchangeKnowledge',
+                request_serializer=stanczyk__pb2.FindAndExchangeRequest.SerializeToString,
+                response_deserializer=stanczyk__pb2.FindAndExchangeResult.FromString,
                 )
 
 
-class StanczykServerServicer(object):
-    """The echo service definition.
-    """
+class StanczykTaskExecutionServiceServicer(object):
+    """Missing associated documentation comment in .proto file."""
 
     def FindFaces(self, request, context):
-        """Echo back reply.
-        """
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def FindFacesAndExchangeKnowledge(self, request, context):
+        """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
 
-def add_StanczykServerServicer_to_server(servicer, server):
+def add_StanczykTaskExecutionServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'FindFaces': grpc.unary_unary_rpc_method_handler(
                     servicer.FindFaces,
-                    request_deserializer=stanczyk__pb2.StanczykRequest.FromString,
-                    response_serializer=stanczyk__pb2.FaceDetectionResult.SerializeToString,
+                    request_deserializer=stanczyk__pb2.FindRequest.FromString,
+                    response_serializer=stanczyk__pb2.FindResult.SerializeToString,
+            ),
+            'FindFacesAndExchangeKnowledge': grpc.unary_unary_rpc_method_handler(
+                    servicer.FindFacesAndExchangeKnowledge,
+                    request_deserializer=stanczyk__pb2.FindAndExchangeRequest.FromString,
+                    response_serializer=stanczyk__pb2.FindAndExchangeResult.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'stanczyk.StanczykServer', rpc_method_handlers)
+            'stanczyk.StanczykTaskExecutionService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
  # This class is part of an EXPERIMENTAL API.
-class StanczykServer(object):
-    """The echo service definition.
-    """
+class StanczykTaskExecutionService(object):
+    """Missing associated documentation comment in .proto file."""
 
     @staticmethod
     def FindFaces(request,
@@ -63,8 +136,25 @@ class StanczykServer(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/stanczyk.StanczykServer/FindFaces',
-            stanczyk__pb2.StanczykRequest.SerializeToString,
-            stanczyk__pb2.FaceDetectionResult.FromString,
+        return grpc.experimental.unary_unary(request, target, '/stanczyk.StanczykTaskExecutionService/FindFaces',
+            stanczyk__pb2.FindRequest.SerializeToString,
+            stanczyk__pb2.FindResult.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def FindFacesAndExchangeKnowledge(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/stanczyk.StanczykTaskExecutionService/FindFacesAndExchangeKnowledge',
+            stanczyk__pb2.FindAndExchangeRequest.SerializeToString,
+            stanczyk__pb2.FindAndExchangeResult.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
