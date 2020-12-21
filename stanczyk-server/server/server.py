@@ -19,11 +19,12 @@ class FacesGrpcService(StanczykTaskExecutionServiceServicer):
         request_id = uuid.uuid4()
         self.metricCollector.collect_initial(request_id)
         image = make_image(request.base64Image)
+        self.metricCollector.insert(request_id, "size", image.size)
         faces = self.detector.detect_faces(image)
-        self.metricCollector.insert(request_id, "size", faces.size)
-        faces = [DetectedFaceData(x=face_x, y=face_y, w=face_w, h=face_h)
+`        faces = [DetectedFaceData(x=face_x, y=face_y, w=face_w, h=face_h)
                  for (face_x, face_y, face_w, face_h) in faces]
         self.metricCollector.collect_final(request_id)
+        print(self.metricCollector.get_recent_metrics())
         return FindResult(data=faces)
 
 

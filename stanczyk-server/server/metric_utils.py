@@ -1,5 +1,7 @@
+import copy
 from collections import OrderedDict
 from datetime import datetime
+from uuid import UUID
 
 import psutil
 from tzlocal import get_localzone
@@ -54,6 +56,10 @@ class MetricCollector:
         del start_metrics["start"]
         start_metrics["runtime"] = runtime
         self.final_store[uuid] = start_metrics
+
+    def get_recent_metrics(self):
+        metrics = dict(copy.deepcopy(self.final_store))
+        return {k: v for (k, v) in metrics.items() if isinstance(k, UUID)}
 
 
 class LRUCache(OrderedDict):
