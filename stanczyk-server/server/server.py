@@ -1,21 +1,29 @@
+import uuid
 from concurrent import futures
 
 import grpc
 
-from face_detector import FaceDetector
+from face_detector import FaceDetector, make_image
 from generated.stanczyk_pb2 import FindRequest, DetectedFaceData, FindResult
 from generated.stanczyk_pb2_grpc import StanczykTaskExecutionServiceServicer, \
     add_StanczykTaskExecutionServiceServicer_to_server
+from metric_utils import MetricCollector
 
 
 class FacesGrpcService(StanczykTaskExecutionServiceServicer):
     def __init__(self):
         self.detector = FaceDetector()
+        self.metricCollector = MetricCollector()
 
     def FindFaces(self, request: FindRequest, context):
-        faces = self.detector.from_base64_jpeg(request.base64Image)
+        request_id = uuid.uuid4()
+        self.metricCollector.collect_initial(request_id)
+        image = make_image(request.base64Image)
+        faces = self.detector.detect_faces(image)
+        self.metricCollector.insert(request_id, "size", faces.size)
         faces = [DetectedFaceData(x=face_x, y=face_y, w=face_w, h=face_h)
                  for (face_x, face_y, face_w, face_h) in faces]
+        self.metricCollector.collect_final(request_id)
         return FindResult(data=faces)
 
 

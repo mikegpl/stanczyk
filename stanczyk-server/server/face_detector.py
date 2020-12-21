@@ -3,6 +3,12 @@ import numpy as np
 import base64
 
 
+def make_image(base64img):
+    jpg_bytes = base64.b64decode(base64img)
+    image_array = np.frombuffer(jpg_bytes, dtype=np.uint8)
+    return cv2.imdecode(image_array, flags=1)
+
+
 class FaceDetector:
     def __init__(self):
         self.cascade_detector = cv2.CascadeClassifier('../resources/haarcascade_config.xml')
