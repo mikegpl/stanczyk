@@ -1,1 +1,0 @@
-# Based on ML Kit Vision Resources
