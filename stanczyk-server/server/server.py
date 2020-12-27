@@ -4,9 +4,11 @@ from concurrent import futures
 import grpc
 
 from face_detector import FaceDetector, make_image
-from generated.stanczyk_pb2 import FindRequest, DetectedFaceData, FindResult
+from generated.stanczyk_pb2 import FindRequest, DetectedFaceData, FindResult, FindAndExchangeRequest, \
+    DeviceExecutorMetadata
 from generated.stanczyk_pb2_grpc import StanczykTaskExecutionServiceServicer, \
-    add_StanczykTaskExecutionServiceServicer_to_server
+    add_StanczykTaskExecutionServiceServicer_to_server, StanczykKnowledgeExchangeServiceServicer, \
+    add_StanczykKnowledgeExchangeServiceServicer_to_server
 from metric_utils import MetricCollector
 
 
@@ -27,12 +29,25 @@ class FacesGrpcService(StanczykTaskExecutionServiceServicer):
         print(self.metricCollector.get_recent_metrics())
         return FindResult(data=faces)
 
+    def FindFacesAndExchangeKnowledge(self, request: FindAndExchangeRequest, context):
+        pass  # todo
+
+
+class KnowledgeGrpcService(StanczykKnowledgeExchangeServiceServicer):
+    def __init__(self):
+        # todo - implement some knowledge store, preferably based on metric_utils.LRUCache
+        pass
+
+    def ExchangeKnowledge(self, request: DeviceExecutorMetadata, context):
+        print(f"Received ${request} from device")
+
 
 class Server:
     @staticmethod
     def run():
         server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
         add_StanczykTaskExecutionServiceServicer_to_server(FacesGrpcService(), server)
+        add_StanczykKnowledgeExchangeServiceServicer_to_server(KnowledgeGrpcService(), server)
         server.add_insecure_port('localhost:50051')
         server.start()
         server.wait_for_termination()

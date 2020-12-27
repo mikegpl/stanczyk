@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0estanczyk.proto\x12\x08stanczyk\"4\n\x0b\x46indRequest\x12\x10\n\x08\x66ileName\x18\x01 \x01(\t\x12\x13\n\x0b\x62\x61se64Image\x18\x02 \x01(\t\">\n\x10\x44\x65tectedFaceData\x12\t\n\x01x\x18\x01 \x01(\x03\x12\t\n\x01y\x18\x02 \x01(\x03\x12\t\n\x01w\x18\x03 \x01(\x03\x12\t\n\x01h\x18\x04 \x01(\x03\"6\n\nFindResult\x12(\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\x1a.stanczyk.DetectedFaceData\"p\n\x16\x46indAndExchangeRequest\x12&\n\x07request\x18\x01 \x01(\x0b\x32\x15.stanczyk.FindRequest\x12.\n\x04meta\x18\x02 \x01(\x0b\x32 .stanczyk.DeviceExecutorMetadata\"l\n\x15\x46indAndExchangeResult\x12$\n\x06result\x18\x01 \x01(\x0b\x32\x14.stanczyk.FindResult\x12-\n\x04meta\x18\x02 \x01(\x0b\x32\x1f.stanczyk.CloudExecutorMetadata\"&\n\x16\x44\x65viceExecutorMetadata\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\t\"%\n\x15\x43loudExecutorMetadata\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\t2|\n StanczykKnowledgeExchangeService\x12X\n\x11\x45xchangeKnowledge\x12 .stanczyk.DeviceExecutorMetadata\x1a\x1f.stanczyk.CloudExecutorMetadata\"\x00\x32\xc0\x01\n\x1cStanczykTaskExecutionService\x12:\n\tFindFaces\x12\x15.stanczyk.FindRequest\x1a\x14.stanczyk.FindResult\"\x00\x12\x64\n\x1d\x46indFacesAndExchangeKnowledge\x12 .stanczyk.FindAndExchangeRequest\x1a\x1f.stanczyk.FindAndExchangeResult\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\x0estanczyk.proto\x12\x08stanczyk\"4\n\x0b\x46indRequest\x12\x10\n\x08\x66ileName\x18\x01 \x01(\t\x12\x13\n\x0b\x62\x61se64Image\x18\x02 \x01(\t\">\n\x10\x44\x65tectedFaceData\x12\t\n\x01x\x18\x01 \x01(\x03\x12\t\n\x01y\x18\x02 \x01(\x03\x12\t\n\x01w\x18\x03 \x01(\x03\x12\t\n\x01h\x18\x04 \x01(\x03\"6\n\nFindResult\x12(\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\x1a.stanczyk.DetectedFaceData\"p\n\x16\x46indAndExchangeRequest\x12&\n\x07request\x18\x01 \x01(\x0b\x32\x15.stanczyk.FindRequest\x12.\n\x04meta\x18\x02 \x01(\x0b\x32 .stanczyk.DeviceExecutorMetadata\"e\n\x15\x46indAndExchangeResult\x12$\n\x06result\x18\x01 \x01(\x0b\x32\x14.stanczyk.FindResult\x12&\n\x04\x64\x61ta\x18\x02 \x01(\x0b\x32\x18.stanczyk.KnowledgeBatch\"\x85\x01\n\x0eKnowledgeBatch\x12\x37\n\tcloudMeta\x18\x01 \x01(\x0b\x32$.stanczyk.CloudExecutorCloudMetadata\x12:\n\x0b\x64\x65vicesMeta\x18\x02 \x01(\x0b\x32%.stanczyk.CloudExecutorDeviceMetadata\"M\n\x1b\x43loudExecutorDeviceMetadata\x12.\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32 .stanczyk.DeviceExecutorMetadata\"K\n\x1a\x43loudExecutorCloudMetadata\x12-\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\x1f.stanczyk.CloudExecutorMetadata\"&\n\x16\x44\x65viceExecutorMetadata\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\t\"%\n\x15\x43loudExecutorMetadata\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\t2u\n StanczykKnowledgeExchangeService\x12Q\n\x11\x45xchangeKnowledge\x12 .stanczyk.DeviceExecutorMetadata\x1a\x18.stanczyk.KnowledgeBatch\"\x00\x32\xc0\x01\n\x1cStanczykTaskExecutionService\x12:\n\tFindFaces\x12\x15.stanczyk.FindRequest\x1a\x14.stanczyk.FindResult\"\x00\x12\x64\n\x1d\x46indFacesAndExchangeKnowledge\x12 .stanczyk.FindAndExchangeRequest\x1a\x1f.stanczyk.FindAndExchangeResult\"\x00\x62\x06proto3'
 )
 
 
@@ -204,7 +204,7 @@ _FINDANDEXCHANGERESULT = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='meta', full_name='stanczyk.FindAndExchangeResult.meta', index=1,
+      name='data', full_name='stanczyk.FindAndExchangeResult.data', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -223,7 +223,110 @@ _FINDANDEXCHANGERESULT = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=316,
-  serialized_end=424,
+  serialized_end=417,
+)
+
+
+_KNOWLEDGEBATCH = _descriptor.Descriptor(
+  name='KnowledgeBatch',
+  full_name='stanczyk.KnowledgeBatch',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='cloudMeta', full_name='stanczyk.KnowledgeBatch.cloudMeta', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='devicesMeta', full_name='stanczyk.KnowledgeBatch.devicesMeta', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=420,
+  serialized_end=553,
+)
+
+
+_CLOUDEXECUTORDEVICEMETADATA = _descriptor.Descriptor(
+  name='CloudExecutorDeviceMetadata',
+  full_name='stanczyk.CloudExecutorDeviceMetadata',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='data', full_name='stanczyk.CloudExecutorDeviceMetadata.data', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=555,
+  serialized_end=632,
+)
+
+
+_CLOUDEXECUTORCLOUDMETADATA = _descriptor.Descriptor(
+  name='CloudExecutorCloudMetadata',
+  full_name='stanczyk.CloudExecutorCloudMetadata',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='data', full_name='stanczyk.CloudExecutorCloudMetadata.data', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=634,
+  serialized_end=709,
 )
 
 
@@ -254,8 +357,8 @@ _DEVICEEXECUTORMETADATA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=426,
-  serialized_end=464,
+  serialized_start=711,
+  serialized_end=749,
 )
 
 
@@ -286,20 +389,27 @@ _CLOUDEXECUTORMETADATA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=466,
-  serialized_end=503,
+  serialized_start=751,
+  serialized_end=788,
 )
 
 _FINDRESULT.fields_by_name['data'].message_type = _DETECTEDFACEDATA
 _FINDANDEXCHANGEREQUEST.fields_by_name['request'].message_type = _FINDREQUEST
 _FINDANDEXCHANGEREQUEST.fields_by_name['meta'].message_type = _DEVICEEXECUTORMETADATA
 _FINDANDEXCHANGERESULT.fields_by_name['result'].message_type = _FINDRESULT
-_FINDANDEXCHANGERESULT.fields_by_name['meta'].message_type = _CLOUDEXECUTORMETADATA
+_FINDANDEXCHANGERESULT.fields_by_name['data'].message_type = _KNOWLEDGEBATCH
+_KNOWLEDGEBATCH.fields_by_name['cloudMeta'].message_type = _CLOUDEXECUTORCLOUDMETADATA
+_KNOWLEDGEBATCH.fields_by_name['devicesMeta'].message_type = _CLOUDEXECUTORDEVICEMETADATA
+_CLOUDEXECUTORDEVICEMETADATA.fields_by_name['data'].message_type = _DEVICEEXECUTORMETADATA
+_CLOUDEXECUTORCLOUDMETADATA.fields_by_name['data'].message_type = _CLOUDEXECUTORMETADATA
 DESCRIPTOR.message_types_by_name['FindRequest'] = _FINDREQUEST
 DESCRIPTOR.message_types_by_name['DetectedFaceData'] = _DETECTEDFACEDATA
 DESCRIPTOR.message_types_by_name['FindResult'] = _FINDRESULT
 DESCRIPTOR.message_types_by_name['FindAndExchangeRequest'] = _FINDANDEXCHANGEREQUEST
 DESCRIPTOR.message_types_by_name['FindAndExchangeResult'] = _FINDANDEXCHANGERESULT
+DESCRIPTOR.message_types_by_name['KnowledgeBatch'] = _KNOWLEDGEBATCH
+DESCRIPTOR.message_types_by_name['CloudExecutorDeviceMetadata'] = _CLOUDEXECUTORDEVICEMETADATA
+DESCRIPTOR.message_types_by_name['CloudExecutorCloudMetadata'] = _CLOUDEXECUTORCLOUDMETADATA
 DESCRIPTOR.message_types_by_name['DeviceExecutorMetadata'] = _DEVICEEXECUTORMETADATA
 DESCRIPTOR.message_types_by_name['CloudExecutorMetadata'] = _CLOUDEXECUTORMETADATA
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -339,6 +449,27 @@ FindAndExchangeResult = _reflection.GeneratedProtocolMessageType('FindAndExchang
   })
 _sym_db.RegisterMessage(FindAndExchangeResult)
 
+KnowledgeBatch = _reflection.GeneratedProtocolMessageType('KnowledgeBatch', (_message.Message,), {
+  'DESCRIPTOR' : _KNOWLEDGEBATCH,
+  '__module__' : 'stanczyk_pb2'
+  # @@protoc_insertion_point(class_scope:stanczyk.KnowledgeBatch)
+  })
+_sym_db.RegisterMessage(KnowledgeBatch)
+
+CloudExecutorDeviceMetadata = _reflection.GeneratedProtocolMessageType('CloudExecutorDeviceMetadata', (_message.Message,), {
+  'DESCRIPTOR' : _CLOUDEXECUTORDEVICEMETADATA,
+  '__module__' : 'stanczyk_pb2'
+  # @@protoc_insertion_point(class_scope:stanczyk.CloudExecutorDeviceMetadata)
+  })
+_sym_db.RegisterMessage(CloudExecutorDeviceMetadata)
+
+CloudExecutorCloudMetadata = _reflection.GeneratedProtocolMessageType('CloudExecutorCloudMetadata', (_message.Message,), {
+  'DESCRIPTOR' : _CLOUDEXECUTORCLOUDMETADATA,
+  '__module__' : 'stanczyk_pb2'
+  # @@protoc_insertion_point(class_scope:stanczyk.CloudExecutorCloudMetadata)
+  })
+_sym_db.RegisterMessage(CloudExecutorCloudMetadata)
+
 DeviceExecutorMetadata = _reflection.GeneratedProtocolMessageType('DeviceExecutorMetadata', (_message.Message,), {
   'DESCRIPTOR' : _DEVICEEXECUTORMETADATA,
   '__module__' : 'stanczyk_pb2'
@@ -362,8 +493,8 @@ _STANCZYKKNOWLEDGEEXCHANGESERVICE = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=505,
-  serialized_end=629,
+  serialized_start=790,
+  serialized_end=907,
   methods=[
   _descriptor.MethodDescriptor(
     name='ExchangeKnowledge',
@@ -371,7 +502,7 @@ _STANCZYKKNOWLEDGEEXCHANGESERVICE = _descriptor.ServiceDescriptor(
     index=0,
     containing_service=None,
     input_type=_DEVICEEXECUTORMETADATA,
-    output_type=_CLOUDEXECUTORMETADATA,
+    output_type=_KNOWLEDGEBATCH,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),
@@ -388,8 +519,8 @@ _STANCZYKTASKEXECUTIONSERVICE = _descriptor.ServiceDescriptor(
   index=1,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=632,
-  serialized_end=824,
+  serialized_start=910,
+  serialized_end=1102,
   methods=[
   _descriptor.MethodDescriptor(
     name='FindFaces',

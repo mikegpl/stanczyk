@@ -17,7 +17,7 @@ class StanczykKnowledgeExchangeServiceStub(object):
         self.ExchangeKnowledge = channel.unary_unary(
                 '/stanczyk.StanczykKnowledgeExchangeService/ExchangeKnowledge',
                 request_serializer=stanczyk__pb2.DeviceExecutorMetadata.SerializeToString,
-                response_deserializer=stanczyk__pb2.CloudExecutorMetadata.FromString,
+                response_deserializer=stanczyk__pb2.KnowledgeBatch.FromString,
                 )
 
 
@@ -36,7 +36,7 @@ def add_StanczykKnowledgeExchangeServiceServicer_to_server(servicer, server):
             'ExchangeKnowledge': grpc.unary_unary_rpc_method_handler(
                     servicer.ExchangeKnowledge,
                     request_deserializer=stanczyk__pb2.DeviceExecutorMetadata.FromString,
-                    response_serializer=stanczyk__pb2.CloudExecutorMetadata.SerializeToString,
+                    response_serializer=stanczyk__pb2.KnowledgeBatch.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -61,7 +61,7 @@ class StanczykKnowledgeExchangeService(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/stanczyk.StanczykKnowledgeExchangeService/ExchangeKnowledge',
             stanczyk__pb2.DeviceExecutorMetadata.SerializeToString,
-            stanczyk__pb2.CloudExecutorMetadata.FromString,
+            stanczyk__pb2.KnowledgeBatch.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
