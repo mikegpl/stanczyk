@@ -2,7 +2,6 @@
 syntax = "proto3";
 package stanczyk;
 
-// The request message containing the user's message.
 message FindRequest {
   string fileName = 1;
   string base64Image = 2;
@@ -26,7 +25,20 @@ message FindAndExchangeRequest {
 
 message FindAndExchangeResult {
   FindResult result = 1;
-  CloudExecutorMetadata meta = 2;
+  KnowledgeBatch data = 2;
+}
+
+message KnowledgeBatch {
+  CloudExecutorCloudMetadata cloudMeta = 1;
+  CloudExecutorDeviceMetadata devicesMeta = 2;
+}
+
+message CloudExecutorDeviceMetadata {
+  repeated DeviceExecutorMetadata data = 1;
+}
+
+message CloudExecutorCloudMetadata {
+	repeated CloudExecutorMetadata data = 1;
 }
 
 message DeviceExecutorMetadata {
@@ -38,7 +50,7 @@ message CloudExecutorMetadata {
 }
 
 service StanczykKnowledgeExchangeService {
-  rpc ExchangeKnowledge (DeviceExecutorMetadata) returns (CloudExecutorMetadata) {}
+  rpc ExchangeKnowledge (DeviceExecutorMetadata) returns (KnowledgeBatch) {}
 }
 
 service StanczykTaskExecutionService {
