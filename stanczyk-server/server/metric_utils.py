@@ -1,7 +1,7 @@
 import copy
 from collections import OrderedDict
 from datetime import datetime
-from uuid import UUID
+from uuid import UUID, uuid4
 
 import psutil
 from tzlocal import get_localzone
@@ -26,7 +26,7 @@ def get_day_and_hour():
     return dtime.weekday(), dtime.hour
 
 
-class MetricCollector:
+class ServerMetricCollector:
     def __init__(self, maxsize=1000):
         self.initial_store = LRUCache(maxsize=maxsize)
         self.final_store = LRUCache(maxsize=maxsize)
@@ -57,9 +57,27 @@ class MetricCollector:
         start_metrics["runtime"] = runtime
         self.final_store[uuid] = start_metrics
 
-    def get_recent_metrics(self):
-        metrics = dict(copy.deepcopy(self.final_store))
+
+class DevicesMetricCollector:
+    def __init__(self, maxsize=1000):
+        self.store = LRUCache(maxsize=maxsize)
+
+    def insert(self, metrics, uuid=uuid4()):
+        self.store[uuid] = metrics
+
+
+class StanczykMetricCollector:
+    def __init__(self, server_size=1000, devices_size=1000):
+        self.devices = DevicesMetricCollector(maxsize=devices_size)
+        self.server = ServerMetricCollector(maxsize=server_size)
+
+    @staticmethod
+    def _extract_metrics(store):
+        metrics = dict(copy.deepcopy(store))
         return {k: v for (k, v) in metrics.items() if isinstance(k, UUID)}
+
+    def get_recent_metrics(self):
+        return self._extract_metrics(self.devices), self._extract_metrics(self.server)
 
 
 class LRUCache(OrderedDict):
