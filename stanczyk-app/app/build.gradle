@@ -1,5 +1,51 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.14'
+    }
+
+}
+
 plugins {
     id 'com.android.application'
+    id "com.google.protobuf" version "0.8.14"
+}
+
+protobuf {
+
+    protoc {
+        artifact = 'com.google.protobuf:protoc:3.8.0'
+    }
+
+    plugins {
+        grpc {
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.34.1'
+        }
+    }
+
+
+    generateProtoTasks {
+        all().each {
+            task ->
+                task.builtins {
+                    java {
+                        option "lite"
+                    }
+                }
+                task.plugins {
+                    grpc {
+                        outputSubDir = 'java'
+                        option 'lite'
+                    }
+                }
+        }
+
+
+
+    }
+    generatedFilesBaseDir = "$projectDir/src/generated"
 }
 
 android {
@@ -40,6 +86,8 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
 
+    implementation group: 'javax.annotation', name: 'javax.annotation-api', version: '1.3.2'
+
     implementation 'com.google.mlkit:face-detection:16.0.3'
     // CameraX
     implementation "androidx.camera:camera-camera2:1.0.0-SNAPSHOT"
@@ -47,6 +95,12 @@ dependencies {
     implementation "androidx.camera:camera-view:1.0.0-SNAPSHOT"
 
     implementation 'com.google.guava:guava:17.0'
+
+    implementation 'com.google.protobuf:protobuf-javalite:3.8.0'
+    implementation 'io.grpc:grpc-okhttp:1.34.1'
+    implementation 'io.grpc:grpc-protobuf-lite:1.34.1'
+    implementation 'io.grpc:grpc-stub:1.34.1'
+
 
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
@@ -58,3 +112,4 @@ configurations {
     // com.google.guava:guava and com.google.guava:listenablefuture together.
     all*.exclude group: 'com.google.guava', module: 'listenablefuture'
 }
+

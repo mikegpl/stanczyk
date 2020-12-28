@@ -1,9 +1,11 @@
 package agh.sm.facedetection;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.BatteryManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Pair;
@@ -13,7 +15,34 @@ import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.Task;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.mlkit.vision.face.Face;
+
+import org.checkerframework.checker.nullness.compatqual.NullableDecl;
+
 import java.io.IOException;
+import java.io.InputStream;
+import java.security.KeyStore;
+import java.security.cert.CertificateFactory;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.security.auth.x500.X500Principal;
+import javax.security.cert.X509Certificate;
+
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import io.grpc.okhttp.OkHttpChannelBuilder;
+import stanczyk.Stanczyk;
+import stanczyk.StanczykKnowledgeExchangeServiceGrpc;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -36,11 +65,18 @@ public class MainActivity extends AppCompatActivity {
     private Uri imageUri;
     private int imageMaxWidth;
     private int imageMaxHeight;
-    private VisionImageProcessor imageProcessor;
+    private VisionImageProcessor<List<Face>> imageProcessor;
+
+    private ExecutorService executor;
+    private ManagedChannel grpcChannel;
+
+    private StanczykKnowledgeExchangeServiceGrpc.StanczykKnowledgeExchangeServiceFutureStub knowledgeExchangeService;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        initializeGRPC();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -54,8 +90,7 @@ public class MainActivity extends AppCompatActivity {
         preview = findViewById(R.id.preview);
 
         View rootView = findViewById(R.id.root);
-        rootView
-                .getViewTreeObserver()
+        rootView.getViewTreeObserver()
                 .addOnGlobalLayoutListener(
                         new ViewTreeObserver.OnGlobalLayoutListener() {
                             @Override
@@ -63,21 +98,72 @@ public class MainActivity extends AppCompatActivity {
                                 rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                                 imageMaxWidth = rootView.getWidth();
                                 imageMaxHeight = rootView.getHeight() - findViewById(R.id.control).getHeight();
-//                                if (SIZE_SCREEN.equals(selectedSize)) {
-//                                    loadImage();
-//                                }
                             }
                         });
 
         imageProcessor = new FaceDetectorProcessor(this);
-
     }
 
+    private void initializeGRPC() {
+        executor = Executors.newFixedThreadPool(4);
+
+
+        ManagedChannelBuilder<?> channelBuilder = ManagedChannelBuilder.forTarget("10.0.2.2:50051")
+                .usePlaintext();
+
+        grpcChannel = channelBuilder.build();
+
+        knowledgeExchangeService = StanczykKnowledgeExchangeServiceGrpc.newFutureStub(grpcChannel);
+
+        Log.i(TAG, "Initialized GRPC connections");
+    }
+
+
+
+    /*
+     * https://source.android.com/devices/tech/power/device
+     *
+     */
     private View.OnClickListener getRunDetectionOnClickListener() {
         return v -> {
             Bitmap imageBitmap = ((BitmapDrawable) preview.getDrawable()).getBitmap();
             if (imageProcessor != null) {
-                imageProcessor.processBitmap(imageBitmap, graphicOverlay);
+                BatteryManager mBatteryManager = (BatteryManager) getApplicationContext().getSystemService(Context.BATTERY_SERVICE);
+                Long energyStart = mBatteryManager.getLongProperty(BatteryManager.BATTERY_PROPERTY_ENERGY_COUNTER);
+
+                Task<List<Face>> task = imageProcessor.processBitmap(imageBitmap, graphicOverlay);
+                task.addOnCompleteListener(task1 -> {
+                    Long energyEnd = mBatteryManager.getLongProperty(BatteryManager.BATTERY_PROPERTY_ENERGY_COUNTER);
+                    int batteryCurrent = mBatteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW);
+                    int capacity = mBatteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+
+                    System.out.println("End energy : " + energyEnd);
+                    System.out.println("Bat current : " + batteryCurrent);
+                    System.out.println("Bat capac : " + capacity);
+                    System.out.println("Energy delta : " + (energyEnd - energyStart));
+
+                    Stanczyk.DeviceExecutorMetadata message = Stanczyk.DeviceExecutorMetadata.newBuilder()
+                            .setData("Test Data")
+                            .build();
+
+                    ListenableFuture<Stanczyk.KnowledgeBatch> knowledgeBatch = knowledgeExchangeService.exchangeKnowledge(message);
+
+                    Futures.addCallback(knowledgeBatch, new FutureCallback<Stanczyk.KnowledgeBatch>() {
+                        @Override
+                        public void onSuccess(@NullableDecl Stanczyk.KnowledgeBatch result) {
+                            System.out.println(result);
+                        }
+
+                        @Override
+                        public void onFailure(Throwable t) {
+                            Log.e(TAG, "Failed in future", t);
+                        }
+                    }, executor);
+
+                    task1.getResult().stream().map(Face::getBoundingBox).forEach(System.out::println);
+                });
+
+
             } else {
                 Log.e(TAG, "Null imageProcessor");
             }

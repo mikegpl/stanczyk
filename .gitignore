@@ -218,3 +218,6 @@ lint/tmp/
 
 # Android Profiling
 *.hprof
+stanczyk-server/Pipfile.lock
+stanczyk-server/Pipfile
+stanczyk-app/app/src/generated

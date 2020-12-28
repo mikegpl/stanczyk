@@ -1,0 +1,62 @@
+// echo.proto
+syntax = "proto3";
+package stanczyk;
+
+//option java_package = "agh.sm.facedetection.proto";
+option java_generic_services = true;
+
+message FindRequest {
+  string fileName = 1;
+  string base64Image = 2;
+}
+
+message DetectedFaceData {
+  int64 x = 1;
+  int64 y = 2;
+  int64 w = 3;
+  int64 h = 4;
+}
+
+message FindResult {
+  repeated DetectedFaceData data = 1;
+}
+
+message FindAndExchangeRequest {
+  FindRequest request = 1;
+  DeviceExecutorMetadata meta = 2;
+}
+
+message FindAndExchangeResult {
+  FindResult result = 1;
+  KnowledgeBatch data = 2;
+}
+
+message KnowledgeBatch {
+  CloudExecutorCloudMetadata cloudMeta = 1;
+  CloudExecutorDeviceMetadata devicesMeta = 2;
+}
+
+message CloudExecutorDeviceMetadata {
+  repeated DeviceExecutorMetadata data = 1;
+}
+
+message CloudExecutorCloudMetadata {
+	repeated CloudExecutorMetadata data = 1;
+}
+
+message DeviceExecutorMetadata {
+  string data = 1; // todo
+}
+
+message CloudExecutorMetadata {
+  string data = 1; // todo
+}
+
+service StanczykKnowledgeExchangeService {
+  rpc ExchangeKnowledge (DeviceExecutorMetadata) returns (KnowledgeBatch) {}
+}
+
+service StanczykTaskExecutionService {
+  rpc FindFaces (FindRequest) returns (FindResult) {}
+  rpc FindFacesAndExchangeKnowledge (FindAndExchangeRequest) returns (FindAndExchangeResult) {}
+}
