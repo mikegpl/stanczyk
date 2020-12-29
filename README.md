@@ -8,4 +8,4 @@ Stańczyk is an experimental set of algorithms used for research about job offlo
 2. Run server_app.py and client_app.py
 
 ## stanczyk-app
-todo
+1. Use `stanczyk-app` as root directory in AndroidStudio
