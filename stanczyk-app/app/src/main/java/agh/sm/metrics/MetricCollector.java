@@ -10,7 +10,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
-import agh.sm.predictor.Knowledge;
+import agh.sm.estimator.DeviceParameters;
 
 public class MetricCollector {
 
@@ -25,12 +25,12 @@ public class MetricCollector {
         this.connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
     }
 
-    public Knowledge getDeviceKnowledge() {
-        Knowledge.Cpu cpuSpeed = getCpuCount() > 2 ?
-                Knowledge.Cpu.FAST : Knowledge.Cpu.SLOW;
-        Knowledge.NetworkSpeed networkSpeed = getNetworkDownloadSpeed() > 1024 * 8 * 1024 ?
-                Knowledge.NetworkSpeed.FAST : Knowledge.NetworkSpeed.SLOW;
-        return new Knowledge(cpuSpeed, networkSpeed);
+    public DeviceParameters getDeviceKnowledge() {
+        DeviceParameters.Cpu cpuSpeed = getCpuCount() > 2 ?
+                DeviceParameters.Cpu.FAST : DeviceParameters.Cpu.SLOW;
+        DeviceParameters.NetworkSpeed networkSpeed = getNetworkDownloadSpeed() > 1024 * 8 * 1024 ?
+                DeviceParameters.NetworkSpeed.FAST : DeviceParameters.NetworkSpeed.SLOW;
+        return new DeviceParameters(cpuSpeed, networkSpeed);
     }
 
     public int getCpuCount() {

@@ -1,12 +1,9 @@
 package agh.sm.facedetection;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.net.NetworkCapabilities;
 import android.net.Uri;
-import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
@@ -32,13 +29,13 @@ import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import agh.sm.estimator.TaskParameters;
 import agh.sm.metrics.MetricCollector;
-import agh.sm.predictor.Knowledge;
-import agh.sm.predictor.Predictor;
+import agh.sm.estimator.DeviceParameters;
+import agh.sm.estimator.ExecutionPredictor;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import stanczyk.Stanczyk;
-import stanczyk.StanczykKnowledgeExchangeServiceGrpc;
 import stanczyk.StanczykTaskExecutionServiceGrpc;
 
 
@@ -65,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
     private ExecutorService executor;
     private ManagedChannel grpcChannel;
 
-    private Predictor executionPredictor;
+    private ExecutionPredictor executionPredictor;
     private StanczykTaskExecutionServiceGrpc.StanczykTaskExecutionServiceFutureStub taskService;
     private MetricCollector metricCollector;
 
@@ -102,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeServices() {
-        executionPredictor = new Predictor();
+        executionPredictor = new ExecutionPredictor();
         metricCollector = new MetricCollector(getApplicationContext());
         executor = Executors.newFixedThreadPool(4);
 
@@ -120,12 +117,13 @@ public class MainActivity extends AppCompatActivity {
     private View.OnClickListener getRunDetectionOnClickListener() {
         return v -> {
             Bitmap imageBitmap = ((BitmapDrawable) preview.getDrawable()).getBitmap();
-            Knowledge deviceKnowledge = metricCollector.getDeviceKnowledge();
+            TaskParameters taskParameters = new TaskParameters();
+            DeviceParameters deviceDeviceParameters = metricCollector.getDeviceKnowledge();
 
-            if (executionPredictor.predict(deviceKnowledge).equals(Predictor.ExecutionTarget.CLOUD) || true) {
+            if (executionPredictor.predict(taskParameters, deviceDeviceParameters).equals(ExecutionPredictor.ExecutionTarget.CLOUD) && false) {
                 cloudExecution(imageBitmap);
             } else {
-                localExecution(imageBitmap);
+                localExecution(imageBitmap); //313, 118, 802, 608
             }
         };
     }
@@ -159,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
         task.addOnCompleteListener(task1 -> {
             long endTime = SystemClock.elapsedRealtime();
             long endEnergy = metricCollector.getBatteryEnergy();
-            executionPredictor.teachDevice(endTime - startTime, endEnergy - startEnergy);
+            executionPredictor.teachFromDevice(endTime - startTime, endEnergy - startEnergy);
 
             task1.getResult().stream()
                     .map(Face::getBoundingBox)

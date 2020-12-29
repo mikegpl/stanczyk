@@ -1,6 +1,6 @@
-package agh.sm.predictor;
+package agh.sm.estimator;
 
-public class Knowledge {
+public class DeviceParameters {
 
     public enum Cpu {
         FAST(10),
@@ -21,7 +21,7 @@ public class Knowledge {
     private final Cpu cpu;
     private final NetworkSpeed networkSpeed;
 
-    public Knowledge(Cpu cpu, NetworkSpeed networkSpeed) {
+    public DeviceParameters(Cpu cpu, NetworkSpeed networkSpeed) {
         this.cpu = cpu;
         this.networkSpeed = networkSpeed;
     }
