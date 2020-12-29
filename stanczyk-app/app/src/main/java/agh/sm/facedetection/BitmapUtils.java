@@ -29,6 +29,7 @@ import android.media.Image.Plane;
 import android.net.Uri;
 import android.os.Build.VERSION_CODES;
 import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -284,5 +285,11 @@ public class BitmapUtils {
       }
       rowStart += plane.getRowStride();
     }
+  }
+
+  public static String convert(Bitmap bitmap) {
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+    return Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT);
   }
 }

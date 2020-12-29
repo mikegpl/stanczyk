@@ -4,9 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.NetworkCapabilities;
 import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.util.Pair;
 import android.view.View;
@@ -20,29 +22,24 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.mlkit.vision.face.Face;
+import com.google.protobuf.ByteString;
 
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.security.KeyStore;
-import java.security.cert.CertificateFactory;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
-import javax.security.auth.x500.X500Principal;
-import javax.security.cert.X509Certificate;
-
+import agh.sm.metrics.MetricCollector;
+import agh.sm.predictor.Knowledge;
+import agh.sm.predictor.Predictor;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import io.grpc.okhttp.OkHttpChannelBuilder;
 import stanczyk.Stanczyk;
 import stanczyk.StanczykKnowledgeExchangeServiceGrpc;
+import stanczyk.StanczykTaskExecutionServiceGrpc;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -50,12 +47,10 @@ public class MainActivity extends AppCompatActivity {
     private static final String SIZE_SCREEN = "w:screen"; // Match screen width
     private static final String SIZE_1024_768 = "w:1024"; // ~1024*768 in a normal ratio
     private static final String SIZE_640_480 = "w:640"; // ~640*480 in a normal ratio
-    private static final String FACE_DETECTION = "Face Detection";
 
     private static final int REQUEST_CHOOSE_IMAGE = 1002;
     private static final String TAG = "MainActivity";
 
-    private final String selectedMode = FACE_DETECTION;
     private final String selectedSize = SIZE_SCREEN;
 
     private ImageView preview;
@@ -70,12 +65,14 @@ public class MainActivity extends AppCompatActivity {
     private ExecutorService executor;
     private ManagedChannel grpcChannel;
 
-    private StanczykKnowledgeExchangeServiceGrpc.StanczykKnowledgeExchangeServiceFutureStub knowledgeExchangeService;
+    private Predictor executionPredictor;
+    private StanczykTaskExecutionServiceGrpc.StanczykTaskExecutionServiceFutureStub taskService;
+    private MetricCollector metricCollector;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        initializeGRPC();
+        initializeServices();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -104,72 +101,71 @@ public class MainActivity extends AppCompatActivity {
         imageProcessor = new FaceDetectorProcessor(this);
     }
 
-    private void initializeGRPC() {
+    private void initializeServices() {
+        executionPredictor = new Predictor();
+        metricCollector = new MetricCollector(getApplicationContext());
         executor = Executors.newFixedThreadPool(4);
 
-
-        ManagedChannelBuilder<?> channelBuilder = ManagedChannelBuilder.forTarget("10.0.2.2:50051")
+        ManagedChannelBuilder<?> channelBuilder = ManagedChannelBuilder
+                .forAddress("10.0.2.2", 50051)
                 .usePlaintext();
 
         grpcChannel = channelBuilder.build();
+        taskService = StanczykTaskExecutionServiceGrpc.newFutureStub(grpcChannel);
 
-        knowledgeExchangeService = StanczykKnowledgeExchangeServiceGrpc.newFutureStub(grpcChannel);
-
-        Log.i(TAG, "Initialized GRPC connections");
+        Log.i(TAG, "Initialized Services");
     }
 
 
-
-    /*
-     * https://source.android.com/devices/tech/power/device
-     *
-     */
     private View.OnClickListener getRunDetectionOnClickListener() {
         return v -> {
             Bitmap imageBitmap = ((BitmapDrawable) preview.getDrawable()).getBitmap();
-            if (imageProcessor != null) {
-                BatteryManager mBatteryManager = (BatteryManager) getApplicationContext().getSystemService(Context.BATTERY_SERVICE);
-                Long energyStart = mBatteryManager.getLongProperty(BatteryManager.BATTERY_PROPERTY_ENERGY_COUNTER);
+            Knowledge deviceKnowledge = metricCollector.getDeviceKnowledge();
 
-                Task<List<Face>> task = imageProcessor.processBitmap(imageBitmap, graphicOverlay);
-                task.addOnCompleteListener(task1 -> {
-                    Long energyEnd = mBatteryManager.getLongProperty(BatteryManager.BATTERY_PROPERTY_ENERGY_COUNTER);
-                    int batteryCurrent = mBatteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW);
-                    int capacity = mBatteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
-
-                    System.out.println("End energy : " + energyEnd);
-                    System.out.println("Bat current : " + batteryCurrent);
-                    System.out.println("Bat capac : " + capacity);
-                    System.out.println("Energy delta : " + (energyEnd - energyStart));
-
-                    Stanczyk.DeviceExecutorMetadata message = Stanczyk.DeviceExecutorMetadata.newBuilder()
-                            .setData("Test Data")
-                            .build();
-
-                    ListenableFuture<Stanczyk.KnowledgeBatch> knowledgeBatch = knowledgeExchangeService.exchangeKnowledge(message);
-
-                    Futures.addCallback(knowledgeBatch, new FutureCallback<Stanczyk.KnowledgeBatch>() {
-                        @Override
-                        public void onSuccess(@NullableDecl Stanczyk.KnowledgeBatch result) {
-                            System.out.println(result);
-                        }
-
-                        @Override
-                        public void onFailure(Throwable t) {
-                            Log.e(TAG, "Failed in future", t);
-                        }
-                    }, executor);
-
-                    task1.getResult().stream().map(Face::getBoundingBox).forEach(System.out::println);
-                });
-
-
+            if (executionPredictor.predict(deviceKnowledge).equals(Predictor.ExecutionTarget.CLOUD) || true) {
+                cloudExecution(imageBitmap);
             } else {
-                Log.e(TAG, "Null imageProcessor");
+                localExecution(imageBitmap);
             }
         };
     }
 
+    private void cloudExecution(Bitmap imageBitmap) {
+        Stanczyk.FindRequest request = Stanczyk.FindRequest.newBuilder()
+                .setFileName("a")
+                .setBase64ImageBytes(ByteString.copyFromUtf8(BitmapUtils.convert(imageBitmap)))
+                .build();
+
+        ListenableFuture<Stanczyk.FindResult> findResult = taskService.findFaces(request);
+
+        Futures.addCallback(findResult, new FutureCallback<Stanczyk.FindResult>() {
+            @Override
+            public void onSuccess(@NullableDecl Stanczyk.FindResult result) {
+                Optional.ofNullable(result.getDataList())
+                        .ifPresent(list -> list.forEach(System.out::println));
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.e(TAG, "Failed in the future", t);
+            }
+        }, executor);
+    }
+
+    private void localExecution(Bitmap imageBitmap) {
+        long startEnergy = metricCollector.getBatteryEnergy();
+        long startTime = SystemClock.elapsedRealtime();
+        Task<List<Face>> task = imageProcessor.processBitmap(imageBitmap, graphicOverlay);
+        task.addOnCompleteListener(task1 -> {
+            long endTime = SystemClock.elapsedRealtime();
+            long endEnergy = metricCollector.getBatteryEnergy();
+            executionPredictor.teachDevice(endTime - startTime, endEnergy - startEnergy);
+
+            task1.getResult().stream()
+                    .map(Face::getBoundingBox)
+                    .forEach(System.out::println);
+        });
+    }
 
     private void startChooseImageIntentForResult() {
         Intent intent = new Intent();
