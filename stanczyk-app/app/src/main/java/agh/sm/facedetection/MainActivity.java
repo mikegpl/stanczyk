@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeServices() {
-        executionPredictor = new ExecutionPredictor();
+        executionPredictor = new ExecutionPredictor(metricCollector);
         metricCollector = new MetricCollector(getApplicationContext());
         executor = Executors.newFixedThreadPool(4);
 
@@ -117,10 +117,18 @@ public class MainActivity extends AppCompatActivity {
     private View.OnClickListener getRunDetectionOnClickListener() {
         return v -> {
             Bitmap imageBitmap = ((BitmapDrawable) preview.getDrawable()).getBitmap();
-            TaskParameters taskParameters = new TaskParameters();
+
+            /*
+             * TODO :
+             *  Metadata for estimators
+             *  Synchronize with Stanczyk (proto)
+             *  Pass these to cloud/localExecution() methods
+             */
+            FaceDetectionTask faceDetectionTask = new FaceDetectionTask(imageBitmap);
+            TaskParameters taskParameters = new TaskParameters(faceDetectionTask);
             DeviceParameters deviceDeviceParameters = metricCollector.getDeviceKnowledge();
 
-            if (executionPredictor.predict(taskParameters, deviceDeviceParameters).equals(ExecutionPredictor.ExecutionTarget.CLOUD) && false) {
+            if (executionPredictor.predict(taskParameters, deviceDeviceParameters).equals(ExecutionPredictor.ExecutionTarget.CLOUD)) {
                 cloudExecution(imageBitmap);
             } else {
                 localExecution(imageBitmap); //313, 118, 802, 608

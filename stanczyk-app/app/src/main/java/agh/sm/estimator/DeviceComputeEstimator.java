@@ -6,7 +6,7 @@ package agh.sm.estimator;
  */
 public class DeviceComputeEstimator {
 
-    public long getDeviceComputeTime(TaskParameters taskParameters, DeviceParameters deviceParameters) {
-        return -1;
+    public double getDeviceComputeTime(TaskParameters taskParameters, DeviceParameters deviceParameters) {
+        return taskParameters.getTaskHardnessLevel() / deviceParameters.getDevicePerformanceLevel();
     }
 }

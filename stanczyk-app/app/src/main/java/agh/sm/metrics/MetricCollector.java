@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.os.BatteryManager;
+import android.os.Build;
 
 import java.io.File;
 import java.util.Arrays;
@@ -25,6 +26,9 @@ public class MetricCollector {
         this.connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
     }
 
+    /*
+     * TODO : Add more metrics to DeviceParameters
+     */
     public DeviceParameters getDeviceKnowledge() {
         DeviceParameters.Cpu cpuSpeed = getCpuCount() > 2 ?
                 DeviceParameters.Cpu.FAST : DeviceParameters.Cpu.SLOW;
@@ -53,6 +57,13 @@ public class MetricCollector {
         return memoryInfo.availMem;
     }
 
+    /*
+     * Max Score - 10
+     * Min Score - 0
+     */
+    public int getSDKScore() {
+        return Math.min(10 - (30 - Build.VERSION.SDK_INT), 0);
+    }
 
     public NetworkCapabilities getActiveNetworkCapabilities() {
         NetworkCapabilities networkCapabilities = connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());
