@@ -28,22 +28,25 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
-import agh.sm.exchange.KnowledgeService;
+import agh.sm.exchange.StanczykService;
 import agh.sm.facedetection.BitmapUtils;
 import agh.sm.facedetection.FaceDetectionTask;
 import agh.sm.facedetection.FaceDetectorProcessor;
 import agh.sm.facedetection.GraphicOverlay;
 import agh.sm.facedetection.R;
 import agh.sm.facedetection.VisionImageProcessor;
+import agh.sm.metrics.MetricCollector;
+import agh.sm.prediction.ExecutionPredictor;
 import agh.sm.prediction.KnowledgeExchangeStrategy;
 import agh.sm.prediction.params.DeviceParameters;
-import agh.sm.prediction.ExecutionPredictor;
 import agh.sm.prediction.params.TaskParameters;
-import agh.sm.metrics.MetricCollector;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import stanczyk.Stanczyk;
+import stanczyk.StanczykKnowledgeExchangeServiceGrpc;
 import stanczyk.StanczykTaskExecutionServiceGrpc;
 
 
@@ -73,7 +76,8 @@ public class MainActivity extends AppCompatActivity {
     private ExecutionPredictor executionPredictor;
     private StanczykTaskExecutionServiceGrpc.StanczykTaskExecutionServiceFutureStub taskService;
     private MetricCollector metricCollector;
-    private KnowledgeService knowledgeService;
+    private StanczykService stanczykService;
+    private StanczykKnowledgeExchangeServiceGrpc.StanczykKnowledgeExchangeServiceFutureStub knowledgeService;
 
 
     @Override
@@ -109,7 +113,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void initializeServices() {
         executionPredictor = new ExecutionPredictor(metricCollector);
-        knowledgeService = new KnowledgeService(KnowledgeExchangeStrategy.ALWAYS_BEFORE_REQUEST, executionPredictor);
         metricCollector = new MetricCollector(getApplicationContext());
         executor = Executors.newFixedThreadPool(4);
 
@@ -119,6 +122,12 @@ public class MainActivity extends AppCompatActivity {
 
         grpcChannel = channelBuilder.build();
         taskService = StanczykTaskExecutionServiceGrpc.newFutureStub(grpcChannel);
+        knowledgeService = StanczykKnowledgeExchangeServiceGrpc.newFutureStub(grpcChannel);
+        stanczykService = new StanczykService(KnowledgeExchangeStrategy.ALWAYS_BEFORE_REQUEST, executionPredictor, knowledgeService);
+
+        if (stanczykService.getStrategy() == KnowledgeExchangeStrategy.AT_INTERVALS) {
+            new ScheduledThreadPoolExecutor(1).schedule(() -> stanczykService.exchangeKnowledge(), 5, TimeUnit.MINUTES); // todo mikegpl - decide on interval
+        }
 
         Log.i(TAG, "Initialized Services");
     }
@@ -138,6 +147,10 @@ public class MainActivity extends AppCompatActivity {
             TaskParameters taskParameters = new TaskParameters(faceDetectionTask);
             DeviceParameters deviceDeviceParameters = metricCollector.getDeviceKnowledge();
 
+            if (stanczykService.getStrategy() == KnowledgeExchangeStrategy.ALWAYS_BEFORE_REQUEST) {
+                stanczykService.exchangeKnowledge();
+            }
+
             if (executionPredictor.predict(taskParameters, deviceDeviceParameters).equals(ExecutionPredictor.ExecutionTarget.CLOUD)) {
                 cloudExecution(imageBitmap);
             } else {
@@ -152,20 +165,40 @@ public class MainActivity extends AppCompatActivity {
                 .setBase64ImageBytes(ByteString.copyFromUtf8(BitmapUtils.convert(imageBitmap)))
                 .build();
 
-        ListenableFuture<Stanczyk.FindResult> findResult = taskService.findFaces(request);
+        if (stanczykService.getStrategy() == KnowledgeExchangeStrategy.ON_DATA_TRANSMISSION) {
+            Stanczyk.FindAndExchangeRequest requestWrapper = Stanczyk.FindAndExchangeRequest.newBuilder()
+                    .setRequest(request)
+                    .setMeta((Stanczyk.DeviceExecutorMetadata) null) // todo mikegpl - get metadata from device executor
+                    .build();
+            ListenableFuture<Stanczyk.FindAndExchangeResult> findResult = taskService.findFacesAndExchangeKnowledge(requestWrapper);
+            Futures.addCallback(findResult, new FutureCallback<Stanczyk.FindAndExchangeResult>() {
+                @Override
+                public void onSuccess(@NullableDecl Stanczyk.FindAndExchangeResult result) {
+                    Optional.ofNullable(result.getResult().getDataList())
+                            .ifPresent(list -> list.forEach(System.out::println));
+//                    result.getData() - todo mikegpl - insert new knowledge into predictor
+                }
 
-        Futures.addCallback(findResult, new FutureCallback<Stanczyk.FindResult>() {
-            @Override
-            public void onSuccess(@NullableDecl Stanczyk.FindResult result) {
-                Optional.ofNullable(result.getDataList())
-                        .ifPresent(list -> list.forEach(System.out::println));
-            }
+                @Override
+                public void onFailure(Throwable t) {
+                    Log.e(TAG, "Failed in the future", t);
+                }
+            }, executor);
+        } else {
+            ListenableFuture<Stanczyk.FindResult> findResult = taskService.findFaces(request);
+            Futures.addCallback(findResult, new FutureCallback<Stanczyk.FindResult>() {
+                @Override
+                public void onSuccess(@NullableDecl Stanczyk.FindResult result) {
+                    Optional.ofNullable(result.getDataList())
+                            .ifPresent(list -> list.forEach(System.out::println));
+                }
 
-            @Override
-            public void onFailure(Throwable t) {
-                Log.e(TAG, "Failed in the future", t);
-            }
-        }, executor);
+                @Override
+                public void onFailure(Throwable t) {
+                    Log.e(TAG, "Failed in the future", t);
+                }
+            }, executor);
+        }
     }
 
     private void localExecution(Bitmap imageBitmap) {
