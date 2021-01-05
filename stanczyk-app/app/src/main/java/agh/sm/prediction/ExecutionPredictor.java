@@ -1,4 +1,4 @@
-package agh.sm.estimator;
+package agh.sm.prediction;
 
 import android.util.Log;
 import android.util.Pair;
@@ -6,6 +6,12 @@ import android.util.Pair;
 import java.util.HashMap;
 import java.util.Map;
 
+import agh.sm.prediction.estimators.CloudComputeEstimator;
+import agh.sm.prediction.estimators.DeviceComputeEstimator;
+import agh.sm.prediction.params.DeviceParameters;
+import agh.sm.prediction.params.TaskExecutionParameters;
+import agh.sm.prediction.params.TaskParameters;
+import agh.sm.prediction.estimators.TransmissionEstimator;
 import agh.sm.metrics.MetricCollector;
 
 public class ExecutionPredictor {

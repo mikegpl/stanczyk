@@ -1,4 +1,6 @@
-package agh.sm.estimator;
+package agh.sm.prediction.estimators;
+
+import agh.sm.prediction.params.TaskParameters;
 
 public class CloudComputeEstimator {
 

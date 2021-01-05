@@ -11,7 +11,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
-import agh.sm.estimator.DeviceParameters;
+import agh.sm.prediction.params.DeviceParameters;
 
 public class MetricCollector {
 

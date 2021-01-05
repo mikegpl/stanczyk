@@ -1,4 +1,4 @@
-package agh.sm.estimator;
+package agh.sm.prediction.params;
 
 import agh.sm.facedetection.FaceDetectionTask;
 

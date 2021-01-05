@@ -1,5 +1,7 @@
-package agh.sm.estimator;
+package agh.sm.prediction.estimators;
 
+import agh.sm.prediction.params.DeviceParameters;
+import agh.sm.prediction.params.TaskParameters;
 import agh.sm.metrics.MetricCollector;
 
 public class TransmissionEstimator {

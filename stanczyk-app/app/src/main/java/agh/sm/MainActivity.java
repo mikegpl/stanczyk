@@ -1,4 +1,4 @@
-package agh.sm.facedetection;
+package agh.sm;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -29,10 +29,18 @@ import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import agh.sm.estimator.TaskParameters;
+import agh.sm.exchange.KnowledgeService;
+import agh.sm.facedetection.BitmapUtils;
+import agh.sm.facedetection.FaceDetectionTask;
+import agh.sm.facedetection.FaceDetectorProcessor;
+import agh.sm.facedetection.GraphicOverlay;
+import agh.sm.facedetection.R;
+import agh.sm.facedetection.VisionImageProcessor;
+import agh.sm.prediction.KnowledgeExchangeStrategy;
+import agh.sm.prediction.params.DeviceParameters;
+import agh.sm.prediction.ExecutionPredictor;
+import agh.sm.prediction.params.TaskParameters;
 import agh.sm.metrics.MetricCollector;
-import agh.sm.estimator.DeviceParameters;
-import agh.sm.estimator.ExecutionPredictor;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import stanczyk.Stanczyk;
@@ -65,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
     private ExecutionPredictor executionPredictor;
     private StanczykTaskExecutionServiceGrpc.StanczykTaskExecutionServiceFutureStub taskService;
     private MetricCollector metricCollector;
+    private KnowledgeService knowledgeService;
 
 
     @Override
@@ -100,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initializeServices() {
         executionPredictor = new ExecutionPredictor(metricCollector);
+        knowledgeService = new KnowledgeService(KnowledgeExchangeStrategy.ALWAYS_BEFORE_REQUEST, executionPredictor);
         metricCollector = new MetricCollector(getApplicationContext());
         executor = Executors.newFixedThreadPool(4);
 
