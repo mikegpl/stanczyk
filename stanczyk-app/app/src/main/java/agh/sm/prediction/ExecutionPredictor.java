@@ -58,6 +58,10 @@ public class ExecutionPredictor {
         return;
     }
 
+    public void learnTransmissionKnowledge() {
+        // todo mikegpl
+    }
+
     public enum ExecutionTarget {
         DEVICE,
         CLOUD;

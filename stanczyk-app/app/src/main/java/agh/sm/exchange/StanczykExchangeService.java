@@ -1,22 +1,25 @@
 package agh.sm.exchange;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
-import agh.sm.prediction.ExecutionPredictor;
 import agh.sm.prediction.KnowledgeExchangeStrategy;
 import stanczyk.Stanczyk;
 import stanczyk.StanczykKnowledgeExchangeServiceGrpc.StanczykKnowledgeExchangeServiceFutureStub;
 
-public class StanczykService {
+public class StanczykExchangeService {
 
     private final KnowledgeExchangeStrategy strategy;
     private final StanczykKnowledgeExchangeServiceFutureStub knowledgeService;
-    private ExecutionPredictor predictor;
 
-    public StanczykService(KnowledgeExchangeStrategy strategy, ExecutionPredictor predictor, StanczykKnowledgeExchangeServiceFutureStub knowledgeService) {
+    public StanczykExchangeService(KnowledgeExchangeStrategy strategy, StanczykKnowledgeExchangeServiceFutureStub knowledgeService) {
         this.strategy = strategy;
-        this.predictor = predictor;
         this.knowledgeService = knowledgeService;
+
+        if (strategy == KnowledgeExchangeStrategy.AT_INTERVALS) {
+            new ScheduledThreadPoolExecutor(1).schedule(this::exchangeKnowledge, 5, TimeUnit.MINUTES); // todo mikegpl - decide on interval
+        }
     }
 
     public KnowledgeExchangeStrategy getStrategy() {
@@ -29,6 +32,7 @@ public class StanczykService {
                 .build();
         try {
             Stanczyk.KnowledgeBatch batch = knowledgeService.exchangeKnowledge(deviceMeta).get(); // this needs to be blocking
+            System.out.println(batch);
             // todo mikegpl - insert new knowledge into predictor
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
