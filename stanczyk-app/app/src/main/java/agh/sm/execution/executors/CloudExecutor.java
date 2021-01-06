@@ -27,13 +27,11 @@ public class CloudExecutor {
     private final StanczykTaskExecutionServiceFutureStub taskService;
     private final StanczykExchangeService stanczyk;
     private final ExecutorService executor;
-    private final KnowledgeStore knowledgeStore;
 
     public CloudExecutor(StanczykExchangeService stanczyk, StanczykTaskExecutionServiceFutureStub taskService, KnowledgeStore knowledgeStore) {
         this.stanczyk = stanczyk;
         this.taskService = taskService;
         this.executor = Executors.newFixedThreadPool(4);
-        this.knowledgeStore = knowledgeStore;
     }
 
     public void executeFor(Bitmap image) {
@@ -68,7 +66,7 @@ public class CloudExecutor {
     private void executeAndExchange(Stanczyk.FindRequest request) {
         Stanczyk.FindAndExchangeRequest requestWrapper = Stanczyk.FindAndExchangeRequest.newBuilder()
                 .setRequest(request)
-                .setDevicesKnowledge(knowledgeStore.getLocalKnowledge())
+                .setDevicesKnowledge(stanczyk.getLocalKnowledge())
                 .build();
         ListenableFuture<Stanczyk.FindAndExchangeResult> findResult = taskService.findFacesAndExchangeKnowledge(requestWrapper);
         Futures.addCallback(findResult, new FutureCallback<Stanczyk.FindAndExchangeResult>() {
@@ -76,7 +74,7 @@ public class CloudExecutor {
             public void onSuccess(@NullableDecl Stanczyk.FindAndExchangeResult result) {
                 Optional.ofNullable(result)
                         .ifPresent(success -> {
-                            stanczyk.updateKnowledge(success.getKnowledge());
+                            stanczyk.updateExternalKnowledge(success.getKnowledge());
                             success.getResult().getDataList().forEach(System.out::println);
                         });
             }

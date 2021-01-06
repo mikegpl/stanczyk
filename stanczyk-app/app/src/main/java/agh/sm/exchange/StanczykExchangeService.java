@@ -4,7 +4,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import agh.sm.metrics.MetricCollector;
 import stanczyk.Stanczyk;
 import stanczyk.StanczykKnowledgeExchangeServiceGrpc.StanczykKnowledgeExchangeServiceFutureStub;
 
@@ -12,15 +11,15 @@ public class StanczykExchangeService {
 
     private final KnowledgeExchangeStrategy strategy;
     private final StanczykKnowledgeExchangeServiceFutureStub knowledgeExchangeService;
-    private final MetricCollector metricCollector;
+    private final KnowledgeStore knowledgeStore;
 
-    public StanczykExchangeService(KnowledgeExchangeStrategy strategy, StanczykKnowledgeExchangeServiceFutureStub knowledgeExchangeService, MetricCollector metricCollector) {
+    public StanczykExchangeService(KnowledgeExchangeStrategy strategy, StanczykKnowledgeExchangeServiceFutureStub knowledgeExchangeService, KnowledgeStore knowledgeStore) {
         this.strategy = strategy;
         this.knowledgeExchangeService = knowledgeExchangeService;
-        this.metricCollector = metricCollector;
+        this.knowledgeStore = knowledgeStore;
 
         if (strategy == KnowledgeExchangeStrategy.AT_INTERVALS) {
-            new ScheduledThreadPoolExecutor(1).schedule(this::exchangeKnowledge, 5, TimeUnit.MINUTES); // todo mikegpl - decide on interval
+            new ScheduledThreadPoolExecutor(1).schedule(this::exchangeKnowledge, 5, TimeUnit.MINUTES); // todo - decide about interval
         }
     }
 
@@ -29,19 +28,24 @@ public class StanczykExchangeService {
     }
 
     public void exchangeKnowledge() {
-        Stanczyk.DevicesKnowledge localKnowledge = Stanczyk.DevicesKnowledge.newBuilder().build(); // todo mikgepl - retrieve knowledge from store (probably filter out knowledge, that did not originate from device)
         try {
-            Stanczyk.KnowledgeBatch batch = knowledgeExchangeService.exchangeKnowledge(localKnowledge).get(); // this needs to be blocking
-            updateKnowledge(batch);
+            Stanczyk.KnowledgeBatch batch = knowledgeExchangeService.exchangeKnowledge(knowledgeStore.getLocalKnowledge()).get(); // this needs to be blocking
+            updateExternalKnowledge(batch);
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    public void updateKnowledge(Stanczyk.KnowledgeBatch knowledgeBatch) {
-        // todo mikegpl:
-        // 1. store (with overwriting) knowledge about devices in KnowledgeStore
-        // 2. store (with overwriting) knowledge about cloud in KnowledgeStore
+    public void updateExternalKnowledge(Stanczyk.KnowledgeBatch knowledgeBatch) {
+        knowledgeStore.insertExternalExecutions(knowledgeBatch.getDevicesKnowledge().getDataList(), knowledgeBatch.getCloudKnowledge().getDataList());
         System.out.println(knowledgeBatch);
+    }
+
+    public void updateLocalKnowledge(Stanczyk.DeviceExecutionMetadata localExecutionMeta) {
+        knowledgeStore.insertLocalExecution(localExecutionMeta);
+    }
+
+    public Stanczyk.DevicesKnowledge getLocalKnowledge() {
+        return knowledgeStore.getLocalKnowledge();
     }
 }

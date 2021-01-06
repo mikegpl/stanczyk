@@ -89,12 +89,12 @@ public class MainActivity extends AppCompatActivity {
         StanczykKnowledgeExchangeServiceGrpc.StanczykKnowledgeExchangeServiceFutureStub knowledgeService = StanczykKnowledgeExchangeServiceGrpc.newFutureStub(grpcChannel);
 
         MetricCollector metricCollector = new MetricCollector(getApplicationContext());
-        StanczykExchangeService exchangeService = new StanczykExchangeService(KnowledgeExchangeStrategy.ALWAYS_BEFORE_REQUEST, knowledgeService, metricCollector);
-        ExecutionPredictor executionPredictor = new ExecutionPredictor(metricCollector);
         KnowledgeStore knowledgeStore = new KnowledgeStore();
+        StanczykExchangeService exchangeService = new StanczykExchangeService(KnowledgeExchangeStrategy.ALWAYS_BEFORE_REQUEST, knowledgeService, knowledgeStore);
+        ExecutionPredictor executionPredictor = new ExecutionPredictor(metricCollector);
 
         VisionImageProcessor<List<Face>> imageProcessor = new FaceDetectorProcessor(this);
-        LocalExecutor localExecutor = new LocalExecutor(graphicOverlay, metricCollector, imageProcessor, executionPredictor);
+        LocalExecutor localExecutor = new LocalExecutor(graphicOverlay, metricCollector, imageProcessor, exchangeService);
         CloudExecutor cloudExecutor = new CloudExecutor(exchangeService, taskService, knowledgeStore);
 
         stanczykExecutionService = new StanczykExecutionService(exchangeService, executionPredictor, metricCollector, cloudExecutor, localExecutor);

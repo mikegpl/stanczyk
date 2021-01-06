@@ -10,34 +10,42 @@ import java.util.List;
 
 import agh.sm.detection.GraphicOverlay;
 import agh.sm.detection.VisionImageProcessor;
+import agh.sm.exchange.StanczykExchangeService;
 import agh.sm.metrics.MetricCollector;
-import agh.sm.prediction.ExecutionPredictor;
+import agh.sm.prediction.params.DeviceParameters;
+import stanczyk.Stanczyk;
 
 public class LocalExecutor {
 
     private final VisionImageProcessor<List<Face>> processor;
     private final GraphicOverlay overlay;
     private final MetricCollector metricCollector;
-    private final ExecutionPredictor predictor;
+    private final StanczykExchangeService stanczykExchangeService;
 
-    public LocalExecutor(GraphicOverlay overlay, MetricCollector metricCollector, VisionImageProcessor<List<Face>> processor, ExecutionPredictor predictor) {
+    public LocalExecutor(GraphicOverlay overlay, MetricCollector metricCollector, VisionImageProcessor<List<Face>> processor, StanczykExchangeService stanczykExchangeService) {
         this.overlay = overlay;
         this.metricCollector = metricCollector;
         this.processor = processor;
-        this.predictor = predictor;
+        this.stanczykExchangeService = stanczykExchangeService;
     }
 
     public void executeFor(Bitmap image) {
-        // todo mikegpl - collect knowledge
-        long startEnergy = metricCollector.getBatteryEnergy();
+        DeviceParameters deviceParams = metricCollector.getDeviceParams();
+        int problemSize = image.getHeight() * image.getWidth();
         long startTime = SystemClock.elapsedRealtime();
         Task<List<Face>> task = processor.processBitmap(image, overlay);
-        task.addOnCompleteListener(task1 -> {
+        task.addOnCompleteListener(taskWrapper -> {
             long endTime = SystemClock.elapsedRealtime();
-            long endEnergy = metricCollector.getBatteryEnergy();
-            predictor.teachFromDevice(endTime - startTime, endEnergy - startEnergy);
+            long timeElapsed = endTime - startTime;
 
-            task1.getResult().stream()
+            stanczykExchangeService.updateLocalKnowledge(
+                    Stanczyk.DeviceExecutionMetadata.newBuilder()
+                            .setExecutionTimeMs(timeElapsed)
+                            .setTaskMetadata(Stanczyk.TaskMetadata.newBuilder().setProblemSize(problemSize).build())
+                            .setDeviceExecutorMetadata(deviceParams.toDto())
+                            .build()
+            );
+            taskWrapper.getResult().stream()
                     .map(Face::getBoundingBox)
                     .forEach(System.out::println);
         });

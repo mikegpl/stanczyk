@@ -42,7 +42,7 @@ public class StanczykExecutionService {
             stanczykService.exchangeKnowledge();
         }
 
-        if (executionPredictor.predict(taskParameters, metricsCollector.getDeviceKnowledge()).equals(ExecutionPredictor.ExecutionTarget.CLOUD)) {
+        if (executionPredictor.predict(taskParameters, metricsCollector.getDeviceParams()).equals(ExecutionPredictor.ExecutionTarget.CLOUD)) {
             cloudExecutor.executeFor(image);
         } else {
             localExecutor.executeFor(image);//313, 118, 802, 608

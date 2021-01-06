@@ -26,7 +26,7 @@ public class MetricCollector {
         this.connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
     }
 
-    public DeviceParameters getDeviceKnowledge() {
+    public DeviceParameters getDeviceParams() {
         ActivityManager.MemoryInfo memoryInfo = getMemory();
         return new DeviceParameters(getCpuCount(), getNetworkDownloadSpeed(), memoryInfo.availMem, memoryInfo.totalMem, getSDKScore(), getBatteryPercentage());
     }
