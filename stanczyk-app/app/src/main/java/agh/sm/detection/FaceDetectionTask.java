@@ -1,4 +1,4 @@
-package agh.sm.facedetection;
+package agh.sm.detection;
 
 import android.graphics.Bitmap;
 

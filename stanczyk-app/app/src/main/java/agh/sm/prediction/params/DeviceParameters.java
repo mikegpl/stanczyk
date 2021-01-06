@@ -4,6 +4,11 @@ import stanczyk.Stanczyk;
 
 public class DeviceParameters {
 
+    private final long availMem;
+    private final long totalMem;
+    private final int sdkScore;
+    private final double batteryPercentage;
+
     public enum Cpu {
         FAST(10),
         SLOW(1);
@@ -39,28 +44,30 @@ public class DeviceParameters {
      *  Replace or fix enums
      *  Add more metrics (SDK lvl, memory, ...)
      */
-    private final Cpu cpu;
-    private final NetworkSpeed networkSpeed;
+    private final int cpuCount;
+    private final int networkSpeed;
 
-    public DeviceParameters(Cpu cpu, NetworkSpeed networkSpeed) {
-        this.cpu = cpu;
+    public DeviceParameters(int cpuCount, int networkSpeed, long availMem, long totalMem, int sdkScore, double batteryPercentage) {
+        this.cpuCount = cpuCount;
         this.networkSpeed = networkSpeed;
+        this.availMem = availMem;
+        this.totalMem = totalMem;
+        this.sdkScore = sdkScore;
+        this.batteryPercentage = batteryPercentage;
     }
 
     /*
      * Use this to map device parameters to proto when sending knowledge to the server
      * Possibly change return type
      */
-    public Stanczyk.DeviceExecutorMetadata toStanczykALALALALChangeName() {
-        // TODO : Implement
+    public Stanczyk.DeviceExecutorMetadata toDto() {
         return Stanczyk.DeviceExecutorMetadata.newBuilder()
+                .setCpuRating(cpuCount)
+                .setNetworkRating(networkSpeed)
+                .setMemoryAvailable(availMem)
+                .setTotalMemory(totalMem)
+                .setSdkScore(sdkScore)
+                .setBatteryPercentage(batteryPercentage)
                 .build();
-    }
-
-    /*
-     * Used by estimators and when sending knowledge to Stanczyk
-     */
-    public int getDevicePerformanceLevel() {
-        return cpu.getRating() + networkSpeed.getRating();
     }
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package agh.sm.facedetection;
+package agh.sm.detection;
 
 import android.annotation.TargetApi;
 import android.content.ContentResolver;

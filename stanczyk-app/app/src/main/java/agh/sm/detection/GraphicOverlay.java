@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package agh.sm.facedetection;
+package agh.sm.detection;
 
 import android.content.Context;
 import android.graphics.Canvas;

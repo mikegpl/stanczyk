@@ -10,6 +10,6 @@ import agh.sm.prediction.params.TaskParameters;
 public class DeviceComputeEstimator {
 
     public double getDeviceComputeTime(TaskParameters taskParameters, DeviceParameters deviceParameters) {
-        return taskParameters.getTaskHardnessLevel() / deviceParameters.getDevicePerformanceLevel();
+        return 2137.0;
     }
 }

@@ -5,10 +5,10 @@ import android.graphics.Bitmap;
 import agh.sm.exchange.StanczykExchangeService;
 import agh.sm.execution.executors.CloudExecutor;
 import agh.sm.execution.executors.LocalExecutor;
-import agh.sm.facedetection.FaceDetectionTask;
+import agh.sm.detection.FaceDetectionTask;
 import agh.sm.metrics.MetricCollector;
 import agh.sm.prediction.ExecutionPredictor;
-import agh.sm.prediction.KnowledgeExchangeStrategy;
+import agh.sm.exchange.KnowledgeExchangeStrategy;
 import agh.sm.prediction.params.TaskParameters;
 
 public class StanczykExecutionService {

@@ -18,18 +18,19 @@ import com.google.mlkit.vision.face.Face;
 import java.io.IOException;
 import java.util.List;
 
+import agh.sm.exchange.KnowledgeStore;
 import agh.sm.exchange.StanczykExchangeService;
 import agh.sm.execution.StanczykExecutionService;
 import agh.sm.execution.executors.CloudExecutor;
 import agh.sm.execution.executors.LocalExecutor;
-import agh.sm.facedetection.BitmapUtils;
-import agh.sm.facedetection.FaceDetectorProcessor;
-import agh.sm.facedetection.GraphicOverlay;
-import agh.sm.facedetection.R;
-import agh.sm.facedetection.VisionImageProcessor;
+import agh.sm.detection.BitmapUtils;
+import agh.sm.detection.FaceDetectorProcessor;
+import agh.sm.detection.GraphicOverlay;
+import agh.sm.detection.R;
+import agh.sm.detection.VisionImageProcessor;
 import agh.sm.metrics.MetricCollector;
 import agh.sm.prediction.ExecutionPredictor;
-import agh.sm.prediction.KnowledgeExchangeStrategy;
+import agh.sm.exchange.KnowledgeExchangeStrategy;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import stanczyk.StanczykKnowledgeExchangeServiceGrpc;
@@ -87,13 +88,14 @@ public class MainActivity extends AppCompatActivity {
         StanczykTaskExecutionServiceGrpc.StanczykTaskExecutionServiceFutureStub taskService = StanczykTaskExecutionServiceGrpc.newFutureStub(grpcChannel);
         StanczykKnowledgeExchangeServiceGrpc.StanczykKnowledgeExchangeServiceFutureStub knowledgeService = StanczykKnowledgeExchangeServiceGrpc.newFutureStub(grpcChannel);
 
-        StanczykExchangeService exchangeService = new StanczykExchangeService(KnowledgeExchangeStrategy.ALWAYS_BEFORE_REQUEST, knowledgeService);
         MetricCollector metricCollector = new MetricCollector(getApplicationContext());
+        StanczykExchangeService exchangeService = new StanczykExchangeService(KnowledgeExchangeStrategy.ALWAYS_BEFORE_REQUEST, knowledgeService, metricCollector);
         ExecutionPredictor executionPredictor = new ExecutionPredictor(metricCollector);
+        KnowledgeStore knowledgeStore = new KnowledgeStore();
 
         VisionImageProcessor<List<Face>> imageProcessor = new FaceDetectorProcessor(this);
         LocalExecutor localExecutor = new LocalExecutor(graphicOverlay, metricCollector, imageProcessor, executionPredictor);
-        CloudExecutor cloudExecutor = new CloudExecutor(exchangeService, taskService);
+        CloudExecutor cloudExecutor = new CloudExecutor(exchangeService, taskService, knowledgeStore);
 
         stanczykExecutionService = new StanczykExecutionService(exchangeService, executionPredictor, metricCollector, cloudExecutor, localExecutor);
 

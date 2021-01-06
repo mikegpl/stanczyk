@@ -1,4 +1,4 @@
-package agh.sm.facedetection;
+package agh.sm.detection;
 
 public class FaceDetectionResult {
     private final int time;

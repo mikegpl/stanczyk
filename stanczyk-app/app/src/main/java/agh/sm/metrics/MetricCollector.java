@@ -26,18 +26,12 @@ public class MetricCollector {
         this.connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
     }
 
-    /*
-     * TODO : Add more metrics to DeviceParameters
-     */
     public DeviceParameters getDeviceKnowledge() {
-        DeviceParameters.Cpu cpuSpeed = getCpuCount() > 2 ?
-                DeviceParameters.Cpu.FAST : DeviceParameters.Cpu.SLOW;
-        DeviceParameters.NetworkSpeed networkSpeed = getNetworkDownloadSpeed() > 1024 * 8 * 1024 ?
-                DeviceParameters.NetworkSpeed.FAST : DeviceParameters.NetworkSpeed.SLOW;
-        return new DeviceParameters(cpuSpeed, networkSpeed);
+        ActivityManager.MemoryInfo memoryInfo = getMemory();
+        return new DeviceParameters(getCpuCount(), getNetworkDownloadSpeed(), memoryInfo.availMem, memoryInfo.totalMem, getSDKScore(), getBatteryPercentage());
     }
 
-    public int getCpuCount() {
+    private int getCpuCount() {
         Pattern pattern = Pattern.compile("cpu[0-9]+");
         int count = (int) Arrays.stream(new File("/sys/devices/system/cpu/").list())
                 .filter(n -> pattern.matcher(n).matches())
@@ -45,16 +39,10 @@ public class MetricCollector {
         return Math.max(count, Runtime.getRuntime().availableProcessors());
     }
 
-    public long getTotalMemory() {
+    private ActivityManager.MemoryInfo getMemory() {
         ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
         activityManager.getMemoryInfo(memoryInfo);
-        return memoryInfo.totalMem;
-    }
-
-    public long getAvailableMemory() {
-        ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
-        activityManager.getMemoryInfo(memoryInfo);
-        return memoryInfo.availMem;
+        return memoryInfo;
     }
 
     /*
@@ -101,6 +89,10 @@ public class MetricCollector {
      */
     public long getBatteryEnergy() {
         return batteryManager.getLongProperty(BatteryManager.BATTERY_PROPERTY_ENERGY_COUNTER);
+    }
+
+    public double getBatteryPercentage() {
+        return batteryManager.getLongProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY) / (double) batteryManager.getLongProperty(BatteryManager.BATTERY_PROPERTY_ENERGY_COUNTER);
     }
 
     /*

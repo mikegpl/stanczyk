@@ -6,13 +6,13 @@ import android.util.Pair;
 import java.util.HashMap;
 import java.util.Map;
 
+import agh.sm.metrics.MetricCollector;
 import agh.sm.prediction.estimators.CloudComputeEstimator;
 import agh.sm.prediction.estimators.DeviceComputeEstimator;
+import agh.sm.prediction.estimators.TransmissionEstimator;
 import agh.sm.prediction.params.DeviceParameters;
 import agh.sm.prediction.params.TaskExecutionParameters;
 import agh.sm.prediction.params.TaskParameters;
-import agh.sm.prediction.estimators.TransmissionEstimator;
-import agh.sm.metrics.MetricCollector;
 
 public class ExecutionPredictor {
 
@@ -55,11 +55,6 @@ public class ExecutionPredictor {
         // TODO : implement
         Log.i(TAG, "Teaching Local Model time : " + executionTime + " | energy : " + energyDelta);
         knowledge.put(null, null);
-        return;
-    }
-
-    public void learnTransmissionKnowledge() {
-        // todo mikegpl
     }
 
     public enum ExecutionTarget {

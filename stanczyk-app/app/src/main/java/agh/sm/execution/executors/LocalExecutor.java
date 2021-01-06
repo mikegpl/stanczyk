@@ -8,8 +8,8 @@ import com.google.mlkit.vision.face.Face;
 
 import java.util.List;
 
-import agh.sm.facedetection.GraphicOverlay;
-import agh.sm.facedetection.VisionImageProcessor;
+import agh.sm.detection.GraphicOverlay;
+import agh.sm.detection.VisionImageProcessor;
 import agh.sm.metrics.MetricCollector;
 import agh.sm.prediction.ExecutionPredictor;
 
@@ -28,6 +28,7 @@ public class LocalExecutor {
     }
 
     public void executeFor(Bitmap image) {
+        // todo mikegpl - collect knowledge
         long startEnergy = metricCollector.getBatteryEnergy();
         long startTime = SystemClock.elapsedRealtime();
         Task<List<Face>> task = processor.processBitmap(image, overlay);

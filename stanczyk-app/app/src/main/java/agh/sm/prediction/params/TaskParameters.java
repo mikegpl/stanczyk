@@ -1,6 +1,6 @@
 package agh.sm.prediction.params;
 
-import agh.sm.facedetection.FaceDetectionTask;
+import agh.sm.detection.FaceDetectionTask;
 
 public class TaskParameters {
 
