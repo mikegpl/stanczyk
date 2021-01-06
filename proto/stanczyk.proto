@@ -2,6 +2,9 @@
 syntax = "proto3";
 package stanczyk;
 
+//option java_package = "agh.sm.facedetection.proto";
+option java_generic_services = true;
+
 message FindRequest {
   string fileName = 1;
   string base64Image = 2;
@@ -20,40 +23,58 @@ message FindResult {
 
 message FindAndExchangeRequest {
   FindRequest request = 1;
-  DeviceExecutorMetadata meta = 2;
+  DevicesKnowledge devicesKnowledge = 2;
 }
 
 message FindAndExchangeResult {
   FindResult result = 1;
-  KnowledgeBatch data = 2;
-}
-
-message KnowledgeBatch {
-  CloudExecutorCloudMetadata cloudMeta = 1;
-  CloudExecutorDeviceMetadata devicesMeta = 2;
-}
-
-message CloudExecutorDeviceMetadata {
-  repeated DeviceExecutorMetadata data = 1;
-}
-
-message CloudExecutorCloudMetadata {
-	repeated CloudExecutorMetadata data = 1;
-}
-
-message DeviceExecutorMetadata {
-  string data = 1; // todo
-}
-
-message CloudExecutorMetadata {
-  string data = 1; // todo
-}
-
-service StanczykKnowledgeExchangeService {
-  rpc ExchangeKnowledge (DeviceExecutorMetadata) returns (KnowledgeBatch) {}
+  KnowledgeBatch knowledge = 2;
 }
 
 service StanczykTaskExecutionService {
   rpc FindFaces (FindRequest) returns (FindResult) {}
   rpc FindFacesAndExchangeKnowledge (FindAndExchangeRequest) returns (FindAndExchangeResult) {}
+}
+
+message KnowledgeBatch {
+  CloudKnowledge cloudKnowledge = 1;
+  DevicesKnowledge devicesKnowledge = 2;
+}
+
+message CloudKnowledge {
+  repeated CloudExecutionMetadata data = 1;
+}
+
+message CloudExecutionMetadata {
+  string data = 1; // todo - define what cloud data is based on overleaf
+  TaskMetadata taskMetadata = 2;
+  int64 executionTimeMs = 3;
+}
+
+message DevicesKnowledge {
+  repeated DeviceExecutionMetadata data = 1;
+}
+
+message DeviceExecutionMetadata {
+  DeviceExecutorMetadata deviceExecutorMetadata = 1;
+  TaskMetadata taskMetadata = 2;
+  int64 executionTimeMs = 3;
+}
+
+message DeviceExecutorMetadata {
+  int64 cpuRating = 1;
+  int64 networkRating = 2;
+  int64 memoryAvailable = 3;
+  int64 totalMemory = 4;
+  int64 sdkScore = 5;
+  double batteryPercentage = 6;
+  // todo - add more executor metadata (e.g. current cpu usage)
+}
+
+message TaskMetadata {
+  int64 problemSize = 1;
+}
+
+service StanczykKnowledgeExchangeService {
+  rpc ExchangeKnowledge (DevicesKnowledge) returns (KnowledgeBatch) {}
 }
