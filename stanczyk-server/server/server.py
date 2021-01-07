@@ -5,11 +5,11 @@ import grpc
 
 from face_detector import FaceDetector, make_image
 from generated.stanczyk_pb2 import FindRequest, DetectedFaceData, FindResult, FindAndExchangeRequest, \
-    DeviceExecutorMetadata, KnowledgeBatch, FindAndExchangeResult
+    FindAndExchangeResult, DevicesKnowledge
 from generated.stanczyk_pb2_grpc import StanczykTaskExecutionServiceServicer, \
     add_StanczykTaskExecutionServiceServicer_to_server, StanczykKnowledgeExchangeServiceServicer, \
     add_StanczykKnowledgeExchangeServiceServicer_to_server
-from metric_utils import StanczykMetricCollector
+from metric_utils import StanczykMetricCollector, knowledge_to_dto, devices_dto_to_knowledge
 
 
 class FacesGrpcService(StanczykTaskExecutionServiceServicer):
@@ -34,21 +34,21 @@ class FacesGrpcService(StanczykTaskExecutionServiceServicer):
     def FindFacesAndExchangeKnowledge(self, request: FindAndExchangeRequest, context):
         request_id = uuid.uuid4()
         result = self._find_faces(request_id, request.base64Image)
-        devices_metrics, server_metrics = self.metrics.get_recent_metrics()
+        device_knowledge = request.devicesKnowledge
+        cloud_knowledge = knowledge_to_dto(*self.metrics.get_recent_metrics())
+        self.metrics.devices.insert_many(devices_dto_to_knowledge(device_knowledge))
         return FindAndExchangeResult(result=FindResult(data=result),
-                                     data=KnowledgeBatch())  # todo - add some metrics -> KnowledgeBatch converter
+                                     data=cloud_knowledge)
 
 
 class KnowledgeGrpcService(StanczykKnowledgeExchangeServiceServicer):
     def __init__(self, metrics_collector):
         self.metrics = metrics_collector
 
-    def ExchangeKnowledge(self, request: DeviceExecutorMetadata, context):
+    def ExchangeKnowledge(self, request: DevicesKnowledge, context):
         print(f"Received ${request} from device")
-        self.metrics.devices.insert(request.data)
-        devices_metrics, server_metrics = self.metrics.get_recent_metrics()
-        print(f"NOT sending back snapshot\nDevices: {devices_metrics}\nServer: {server_metrics}")
-        return KnowledgeBatch()  # todo - add some metrics -> KnowledgeBatch converter
+        self.metrics.devices.insert_many(devices_dto_to_knowledge(request))
+        return knowledge_to_dto(*self.metrics.get_recent_metrics)
 
 
 class Server:

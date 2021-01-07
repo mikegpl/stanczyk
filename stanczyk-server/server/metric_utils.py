@@ -4,7 +4,10 @@ from datetime import datetime
 from uuid import UUID, uuid4
 
 import psutil
+from google.protobuf.json_format import MessageToJson
 from tzlocal import get_localzone
+
+from generated.stanczyk_pb2 import KnowledgeBatch
 
 
 def get_cpu_load_history():
@@ -24,6 +27,25 @@ def get_available_ram() -> int:
 def get_day_and_hour():
     dtime = datetime.now(tz=get_localzone())
     return dtime.weekday(), dtime.hour
+
+
+def knowledge_to_dto(devices_metrics, server_metrics):
+    return KnowledgeBatch(cloudKnowledge=cloud_knowledge(server_metrics),
+                          devicesKnowledge=devices_knowledge(devices_metrics))
+
+
+def devices_dto_to_knowledge(knowledge_dto):
+    data = list(knowledge_dto.data)
+    return [{**MessageToJson(point.deviceExecutorMetadata), **MessageToJson(point.taskMetadata),
+             **{"problemSize": point.problemSize}} for point in data]
+
+
+def cloud_knowledge(metrics):
+    pass  # todo - translate internally stored knowledge to CloudKnowledge dto
+
+
+def devices_knowledge(metrics):
+    pass  # todo - translate internally stored knowledge to DevicesKnowledge dto
 
 
 class ServerMetricCollector:
@@ -64,6 +86,9 @@ class DevicesMetricCollector:
 
     def insert(self, metrics, uuid=uuid4()):
         self.store[uuid] = metrics
+
+    def insert_many(self, metrics_list):
+        pass  # todo - see dto_to_knowledge etc
 
 
 class StanczykMetricCollector:
