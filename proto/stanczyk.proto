@@ -46,9 +46,16 @@ message CloudKnowledge {
 }
 
 message CloudExecutionMetadata {
-  string data = 1; // todo - define what cloud data is based on overleaf
+  CloudExecutorMetadata cloudExecutorMetadata = 1;
   TaskMetadata taskMetadata = 2;
   int64 executionTimeMs = 3;
+}
+
+message CloudExecutorMetadata {
+  double cpuLoad = 1;
+  double ramAvailable = 2;
+  int32 dayOfWeek = 3;
+  int32 hourOfDay = 4;
 }
 
 message DevicesKnowledge {

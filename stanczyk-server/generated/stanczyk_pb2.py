@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'\210\001\001',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0estanczyk.proto\x12\x08stanczyk\"4\n\x0b\x46indRequest\x12\x10\n\x08\x66ileName\x18\x01 \x01(\t\x12\x13\n\x0b\x62\x61se64Image\x18\x02 \x01(\t\">\n\x10\x44\x65tectedFaceData\x12\t\n\x01x\x18\x01 \x01(\x03\x12\t\n\x01y\x18\x02 \x01(\x03\x12\t\n\x01w\x18\x03 \x01(\x03\x12\t\n\x01h\x18\x04 \x01(\x03\"6\n\nFindResult\x12(\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\x1a.stanczyk.DetectedFaceData\"v\n\x16\x46indAndExchangeRequest\x12&\n\x07request\x18\x01 \x01(\x0b\x32\x15.stanczyk.FindRequest\x12\x34\n\x10\x64\x65vicesKnowledge\x18\x02 \x01(\x0b\x32\x1a.stanczyk.DevicesKnowledge\"j\n\x15\x46indAndExchangeResult\x12$\n\x06result\x18\x01 \x01(\x0b\x32\x14.stanczyk.FindResult\x12+\n\tknowledge\x18\x02 \x01(\x0b\x32\x18.stanczyk.KnowledgeBatch\"x\n\x0eKnowledgeBatch\x12\x30\n\x0e\x63loudKnowledge\x18\x01 \x01(\x0b\x32\x18.stanczyk.CloudKnowledge\x12\x34\n\x10\x64\x65vicesKnowledge\x18\x02 \x01(\x0b\x32\x1a.stanczyk.DevicesKnowledge\"@\n\x0e\x43loudKnowledge\x12.\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32 .stanczyk.CloudExecutionMetadata\"m\n\x16\x43loudExecutionMetadata\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\t\x12,\n\x0ctaskMetadata\x18\x02 \x01(\x0b\x32\x16.stanczyk.TaskMetadata\x12\x17\n\x0f\x65xecutionTimeMs\x18\x03 \x01(\x03\"C\n\x10\x44\x65vicesKnowledge\x12/\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32!.stanczyk.DeviceExecutionMetadata\"\xa2\x01\n\x17\x44\x65viceExecutionMetadata\x12@\n\x16\x64\x65viceExecutorMetadata\x18\x01 \x01(\x0b\x32 .stanczyk.DeviceExecutorMetadata\x12,\n\x0ctaskMetadata\x18\x02 \x01(\x0b\x32\x16.stanczyk.TaskMetadata\x12\x17\n\x0f\x65xecutionTimeMs\x18\x03 \x01(\x03\"\x9d\x01\n\x16\x44\x65viceExecutorMetadata\x12\x11\n\tcpuRating\x18\x01 \x01(\x03\x12\x15\n\rnetworkRating\x18\x02 \x01(\x03\x12\x17\n\x0fmemoryAvailable\x18\x03 \x01(\x03\x12\x13\n\x0btotalMemory\x18\x04 \x01(\x03\x12\x10\n\x08sdkScore\x18\x05 \x01(\x03\x12\x19\n\x11\x62\x61tteryPercentage\x18\x06 \x01(\x01\"#\n\x0cTaskMetadata\x12\x13\n\x0bproblemSize\x18\x01 \x01(\x03\x32\xc0\x01\n\x1cStanczykTaskExecutionService\x12:\n\tFindFaces\x12\x15.stanczyk.FindRequest\x1a\x14.stanczyk.FindResult\"\x00\x12\x64\n\x1d\x46indFacesAndExchangeKnowledge\x12 .stanczyk.FindAndExchangeRequest\x1a\x1f.stanczyk.FindAndExchangeResult\"\x00\x32o\n StanczykKnowledgeExchangeService\x12K\n\x11\x45xchangeKnowledge\x12\x1a.stanczyk.DevicesKnowledge\x1a\x18.stanczyk.KnowledgeBatch\"\x00\x42\x03\x88\x01\x01\x62\x06proto3'
+  serialized_pb=b'\n\x0estanczyk.proto\x12\x08stanczyk\"4\n\x0b\x46indRequest\x12\x10\n\x08\x66ileName\x18\x01 \x01(\t\x12\x13\n\x0b\x62\x61se64Image\x18\x02 \x01(\t\">\n\x10\x44\x65tectedFaceData\x12\t\n\x01x\x18\x01 \x01(\x03\x12\t\n\x01y\x18\x02 \x01(\x03\x12\t\n\x01w\x18\x03 \x01(\x03\x12\t\n\x01h\x18\x04 \x01(\x03\"6\n\nFindResult\x12(\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\x1a.stanczyk.DetectedFaceData\"v\n\x16\x46indAndExchangeRequest\x12&\n\x07request\x18\x01 \x01(\x0b\x32\x15.stanczyk.FindRequest\x12\x34\n\x10\x64\x65vicesKnowledge\x18\x02 \x01(\x0b\x32\x1a.stanczyk.DevicesKnowledge\"j\n\x15\x46indAndExchangeResult\x12$\n\x06result\x18\x01 \x01(\x0b\x32\x14.stanczyk.FindResult\x12+\n\tknowledge\x18\x02 \x01(\x0b\x32\x18.stanczyk.KnowledgeBatch\"x\n\x0eKnowledgeBatch\x12\x30\n\x0e\x63loudKnowledge\x18\x01 \x01(\x0b\x32\x18.stanczyk.CloudKnowledge\x12\x34\n\x10\x64\x65vicesKnowledge\x18\x02 \x01(\x0b\x32\x1a.stanczyk.DevicesKnowledge\"@\n\x0e\x43loudKnowledge\x12.\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32 .stanczyk.CloudExecutionMetadata\"\x9f\x01\n\x16\x43loudExecutionMetadata\x12>\n\x15\x63loudExecutorMetadata\x18\x01 \x01(\x0b\x32\x1f.stanczyk.CloudExecutorMetadata\x12,\n\x0ctaskMetadata\x18\x02 \x01(\x0b\x32\x16.stanczyk.TaskMetadata\x12\x17\n\x0f\x65xecutionTimeMs\x18\x03 \x01(\x03\"d\n\x15\x43loudExecutorMetadata\x12\x0f\n\x07\x63puLoad\x18\x01 \x01(\x01\x12\x14\n\x0cramAvailable\x18\x02 \x01(\x01\x12\x11\n\tdayOfWeek\x18\x03 \x01(\x05\x12\x11\n\thourOfDay\x18\x04 \x01(\x05\"C\n\x10\x44\x65vicesKnowledge\x12/\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32!.stanczyk.DeviceExecutionMetadata\"\xa2\x01\n\x17\x44\x65viceExecutionMetadata\x12@\n\x16\x64\x65viceExecutorMetadata\x18\x01 \x01(\x0b\x32 .stanczyk.DeviceExecutorMetadata\x12,\n\x0ctaskMetadata\x18\x02 \x01(\x0b\x32\x16.stanczyk.TaskMetadata\x12\x17\n\x0f\x65xecutionTimeMs\x18\x03 \x01(\x03\"\x9d\x01\n\x16\x44\x65viceExecutorMetadata\x12\x11\n\tcpuRating\x18\x01 \x01(\x03\x12\x15\n\rnetworkRating\x18\x02 \x01(\x03\x12\x17\n\x0fmemoryAvailable\x18\x03 \x01(\x03\x12\x13\n\x0btotalMemory\x18\x04 \x01(\x03\x12\x10\n\x08sdkScore\x18\x05 \x01(\x03\x12\x19\n\x11\x62\x61tteryPercentage\x18\x06 \x01(\x01\"#\n\x0cTaskMetadata\x12\x13\n\x0bproblemSize\x18\x01 \x01(\x03\x32\xc0\x01\n\x1cStanczykTaskExecutionService\x12:\n\tFindFaces\x12\x15.stanczyk.FindRequest\x1a\x14.stanczyk.FindResult\"\x00\x12\x64\n\x1d\x46indFacesAndExchangeKnowledge\x12 .stanczyk.FindAndExchangeRequest\x1a\x1f.stanczyk.FindAndExchangeResult\"\x00\x32o\n StanczykKnowledgeExchangeService\x12K\n\x11\x45xchangeKnowledge\x12\x1a.stanczyk.DevicesKnowledge\x1a\x18.stanczyk.KnowledgeBatch\"\x00\x42\x03\x88\x01\x01\x62\x06proto3'
 )
 
 
@@ -307,9 +307,9 @@ _CLOUDEXECUTIONMETADATA = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='data', full_name='stanczyk.CloudExecutionMetadata.data', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
+      name='cloudExecutorMetadata', full_name='stanczyk.CloudExecutionMetadata.cloudExecutorMetadata', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -339,8 +339,61 @@ _CLOUDEXECUTIONMETADATA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=618,
-  serialized_end=727,
+  serialized_start=619,
+  serialized_end=778,
+)
+
+
+_CLOUDEXECUTORMETADATA = _descriptor.Descriptor(
+  name='CloudExecutorMetadata',
+  full_name='stanczyk.CloudExecutorMetadata',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='cpuLoad', full_name='stanczyk.CloudExecutorMetadata.cpuLoad', index=0,
+      number=1, type=1, cpp_type=5, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='ramAvailable', full_name='stanczyk.CloudExecutorMetadata.ramAvailable', index=1,
+      number=2, type=1, cpp_type=5, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='dayOfWeek', full_name='stanczyk.CloudExecutorMetadata.dayOfWeek', index=2,
+      number=3, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='hourOfDay', full_name='stanczyk.CloudExecutorMetadata.hourOfDay', index=3,
+      number=4, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=780,
+  serialized_end=880,
 )
 
 
@@ -371,8 +424,8 @@ _DEVICESKNOWLEDGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=729,
-  serialized_end=796,
+  serialized_start=882,
+  serialized_end=949,
 )
 
 
@@ -417,8 +470,8 @@ _DEVICEEXECUTIONMETADATA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=799,
-  serialized_end=961,
+  serialized_start=952,
+  serialized_end=1114,
 )
 
 
@@ -484,8 +537,8 @@ _DEVICEEXECUTORMETADATA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=964,
-  serialized_end=1121,
+  serialized_start=1117,
+  serialized_end=1274,
 )
 
 
@@ -516,8 +569,8 @@ _TASKMETADATA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1123,
-  serialized_end=1158,
+  serialized_start=1276,
+  serialized_end=1311,
 )
 
 _FINDRESULT.fields_by_name['data'].message_type = _DETECTEDFACEDATA
@@ -528,6 +581,7 @@ _FINDANDEXCHANGERESULT.fields_by_name['knowledge'].message_type = _KNOWLEDGEBATC
 _KNOWLEDGEBATCH.fields_by_name['cloudKnowledge'].message_type = _CLOUDKNOWLEDGE
 _KNOWLEDGEBATCH.fields_by_name['devicesKnowledge'].message_type = _DEVICESKNOWLEDGE
 _CLOUDKNOWLEDGE.fields_by_name['data'].message_type = _CLOUDEXECUTIONMETADATA
+_CLOUDEXECUTIONMETADATA.fields_by_name['cloudExecutorMetadata'].message_type = _CLOUDEXECUTORMETADATA
 _CLOUDEXECUTIONMETADATA.fields_by_name['taskMetadata'].message_type = _TASKMETADATA
 _DEVICESKNOWLEDGE.fields_by_name['data'].message_type = _DEVICEEXECUTIONMETADATA
 _DEVICEEXECUTIONMETADATA.fields_by_name['deviceExecutorMetadata'].message_type = _DEVICEEXECUTORMETADATA
@@ -540,6 +594,7 @@ DESCRIPTOR.message_types_by_name['FindAndExchangeResult'] = _FINDANDEXCHANGERESU
 DESCRIPTOR.message_types_by_name['KnowledgeBatch'] = _KNOWLEDGEBATCH
 DESCRIPTOR.message_types_by_name['CloudKnowledge'] = _CLOUDKNOWLEDGE
 DESCRIPTOR.message_types_by_name['CloudExecutionMetadata'] = _CLOUDEXECUTIONMETADATA
+DESCRIPTOR.message_types_by_name['CloudExecutorMetadata'] = _CLOUDEXECUTORMETADATA
 DESCRIPTOR.message_types_by_name['DevicesKnowledge'] = _DEVICESKNOWLEDGE
 DESCRIPTOR.message_types_by_name['DeviceExecutionMetadata'] = _DEVICEEXECUTIONMETADATA
 DESCRIPTOR.message_types_by_name['DeviceExecutorMetadata'] = _DEVICEEXECUTORMETADATA
@@ -602,6 +657,13 @@ CloudExecutionMetadata = _reflection.GeneratedProtocolMessageType('CloudExecutio
   })
 _sym_db.RegisterMessage(CloudExecutionMetadata)
 
+CloudExecutorMetadata = _reflection.GeneratedProtocolMessageType('CloudExecutorMetadata', (_message.Message,), {
+  'DESCRIPTOR' : _CLOUDEXECUTORMETADATA,
+  '__module__' : 'stanczyk_pb2'
+  # @@protoc_insertion_point(class_scope:stanczyk.CloudExecutorMetadata)
+  })
+_sym_db.RegisterMessage(CloudExecutorMetadata)
+
 DevicesKnowledge = _reflection.GeneratedProtocolMessageType('DevicesKnowledge', (_message.Message,), {
   'DESCRIPTOR' : _DEVICESKNOWLEDGE,
   '__module__' : 'stanczyk_pb2'
@@ -640,8 +702,8 @@ _STANCZYKTASKEXECUTIONSERVICE = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=1161,
-  serialized_end=1353,
+  serialized_start=1314,
+  serialized_end=1506,
   methods=[
   _descriptor.MethodDescriptor(
     name='FindFaces',
@@ -676,8 +738,8 @@ _STANCZYKKNOWLEDGEEXCHANGESERVICE = _descriptor.ServiceDescriptor(
   index=1,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=1355,
-  serialized_end=1466,
+  serialized_start=1508,
+  serialized_end=1619,
   methods=[
   _descriptor.MethodDescriptor(
     name='ExchangeKnowledge',
