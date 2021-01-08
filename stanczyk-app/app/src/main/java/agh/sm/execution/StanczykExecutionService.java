@@ -2,6 +2,8 @@ package agh.sm.execution;
 
 import android.graphics.Bitmap;
 
+import java.util.stream.Collectors;
+
 import agh.sm.exchange.StanczykExchangeService;
 import agh.sm.execution.executors.CloudExecutor;
 import agh.sm.execution.executors.LocalExecutor;
@@ -9,7 +11,9 @@ import agh.sm.detection.FaceDetectionTask;
 import agh.sm.metrics.MetricCollector;
 import agh.sm.prediction.ExecutionPredictor;
 import agh.sm.exchange.KnowledgeExchangeStrategy;
+import agh.sm.prediction.params.KnnX;
 import agh.sm.prediction.params.TaskParameters;
+import stanczyk.Stanczyk;
 
 public class StanczykExecutionService {
 
@@ -40,6 +44,11 @@ public class StanczykExecutionService {
 
         if (stanczykService.getStrategy() == KnowledgeExchangeStrategy.ALWAYS_BEFORE_REQUEST) {
             stanczykService.exchangeKnowledge();
+            // TODO : map local knowledge to KnnX and learn
+            Stanczyk.DevicesKnowledge localKnowledge = stanczykService.getLocalKnowledge();
+            KnnX[] localKnowdlegeForKnnX = Arrays.stream(localKnowledge).map(KnnX::fromStanczykGetX).collect(Collectors.toList());
+            int[] localKnowdlegeForKnnY = Arrays.stream(localKnowledge).map(KnnX::fromStanczykGetY).collect(Collectors.toList());
+            executionPredictor.learn(localKnowdlegeForKnnX, localKnowdlegeForKnnY);
         }
 
         if (executionPredictor.predict(taskParameters, metricsCollector.getDeviceParams()).equals(ExecutionPredictor.ExecutionTarget.CLOUD)) {

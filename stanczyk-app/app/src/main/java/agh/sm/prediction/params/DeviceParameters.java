@@ -70,4 +70,28 @@ public class DeviceParameters {
                 .setBatteryPercentage(batteryPercentage)
                 .build();
     }
+
+    public long getAvailMem() {
+        return availMem;
+    }
+
+    public long getTotalMem() {
+        return totalMem;
+    }
+
+    public int getSdkScore() {
+        return sdkScore;
+    }
+
+    public double getBatteryPercentage() {
+        return batteryPercentage;
+    }
+
+    public int getCpuCount() {
+        return cpuCount;
+    }
+
+    public int getNetworkSpeed() {
+        return networkSpeed;
+    }
 }
