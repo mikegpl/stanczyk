@@ -4,10 +4,11 @@ from datetime import datetime
 from uuid import UUID, uuid4
 
 import psutil
-from google.protobuf.json_format import MessageToJson
+from google.protobuf.json_format import MessageToDict
 from tzlocal import get_localzone
 
-from generated.stanczyk_pb2 import KnowledgeBatch
+from generated.stanczyk_pb2 import KnowledgeBatch, CloudKnowledge, CloudExecutionMetadata, CloudExecutorMetadata, \
+    TaskMetadata, DevicesKnowledge, DeviceExecutionMetadata, DeviceExecutorMetadata
 
 
 def get_cpu_load_history():
@@ -36,16 +37,42 @@ def knowledge_to_dto(devices_metrics, server_metrics):
 
 def devices_dto_to_knowledge(knowledge_dto):
     data = list(knowledge_dto.data)
-    return [{**MessageToJson(point.deviceExecutorMetadata), **MessageToJson(point.taskMetadata),
-             **{"problemSize": point.problemSize}} for point in data]
+    return [{**MessageToDict(point.deviceExecutorMetadata), **MessageToDict(point.taskMetadata),
+             **{"executionTimeMs": point.executionTimeMs}} for point in data]
 
 
-def cloud_knowledge(metrics):
-    pass  # todo - translate internally stored knowledge to CloudKnowledge dto
+def devices_knowledge(device_metrics):
+    devices_data = [DeviceExecutionMetadata(
+        deviceExecutorMetadata=DeviceExecutorMetadata(
+            cpuRating=metrics["cpuRating"],
+            networkRating=metrics["networkRating"],
+            memoryAvailable=metrics["memoryAvailable"],
+            totalMemory=metrics["totalMemory"],
+            sdkScore=metrics["sdkScore"],
+            batteryPercentage=metrics["batteryPercentage"]
+        ),
+        taskMetadata=TaskMetadata(
+            problemSize=metrics["problemSize"]
+        ),
+        executionTimeMs=metrics["executionTimeMs"]
+    ) for metrics in device_metrics]
+    return DevicesKnowledge(data=devices_data)
 
 
-def devices_knowledge(metrics):
-    pass  # todo - translate internally stored knowledge to DevicesKnowledge dto
+def cloud_knowledge(cloud_metrics):
+    cloud_data = [CloudExecutionMetadata(
+        cloudExecutorMetadata=CloudExecutorMetadata(
+            cpuLoad=metrics["cpu"],
+            ramAvailable=metrics["ram"],
+            dayOfWeek=metrics["dayOfWeek"],
+            hourOfDay=metrics["hourOfDay"]
+        ),
+        taskMetadata=TaskMetadata(
+            problemSize=metrics["size"]
+        ),
+        executionTimeMs=metrics["runtime"] * 1000
+    ) for metrics in cloud_metrics]
+    return CloudKnowledge(data=cloud_data)
 
 
 class ServerMetricCollector:
@@ -88,7 +115,8 @@ class DevicesMetricCollector:
         self.store[uuid] = metrics
 
     def insert_many(self, metrics_list):
-        pass  # todo - see dto_to_knowledge etc
+        for metrics in metrics_list:
+            self.insert(metrics)
 
 
 class StanczykMetricCollector:
