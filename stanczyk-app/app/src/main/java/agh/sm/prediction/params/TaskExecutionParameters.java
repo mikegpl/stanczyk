@@ -4,12 +4,12 @@ import stanczyk.Stanczyk;
 
 public class TaskExecutionParameters{
 
-    private final TaskParameters taskParameters;
+    private final TaskParametersMetadata taskParametersMetadata;
     private final Long totalExecutionTime;
     private final Long usedEnergy;
 
-    public TaskExecutionParameters(TaskParameters taskParameters, Long totalExecutionTime, Long usedEnergy) {
-        this.taskParameters = taskParameters;
+    public TaskExecutionParameters(TaskParametersMetadata taskParametersMetadata, Long totalExecutionTime, Long usedEnergy) {
+        this.taskParametersMetadata = taskParametersMetadata;
         this.totalExecutionTime = totalExecutionTime;
         this.usedEnergy = usedEnergy;
     }

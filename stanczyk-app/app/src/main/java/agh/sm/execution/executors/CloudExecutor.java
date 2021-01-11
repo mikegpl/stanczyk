@@ -48,6 +48,7 @@ public class CloudExecutor {
     }
 
     private void justExecute(Stanczyk.FindRequest request) {
+        Log.i(TAG, "Just Executing in the Cloud");
         ListenableFuture<Stanczyk.FindResult> findResult = taskService.findFaces(request);
         Futures.addCallback(findResult, new FutureCallback<Stanczyk.FindResult>() {
             @Override
@@ -64,6 +65,8 @@ public class CloudExecutor {
     }
 
     private void executeAndExchange(Stanczyk.FindRequest request) {
+        Log.i(TAG, "Execute and Exchange in the Cloud");
+
         Stanczyk.FindAndExchangeRequest requestWrapper = Stanczyk.FindAndExchangeRequest.newBuilder()
                 .setRequest(request)
                 .setDevicesKnowledge(stanczyk.getLocalKnowledge())

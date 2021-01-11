@@ -5,7 +5,7 @@ import java.util.List;
 
 import agh.sm.prediction.params.DeviceParameters;
 import agh.sm.prediction.params.KnnX;
-import agh.sm.prediction.params.TaskParameters;
+import agh.sm.prediction.params.TaskParametersMetadata;
 import smile.data.DataFrame;
 import smile.data.formula.Formula;
 import smile.regression.LinearModel;
@@ -15,12 +15,12 @@ public class CloudComputeEstimator {
 
     private LinearModel regresor;
 
-    public long getCloudComputeTime(TaskParameters taskParameters) {
-        return -1;
+    public long getCloudComputeTime(TaskParametersMetadata taskParametersMetadata) {
+        return 1;
     }
 
-    public double predictCloudComputeTime(TaskParameters taskParameters, DeviceParameters deviceParameters) {
-        KnnX knnX = new KnnX(taskParameters, deviceParameters);
+    public double predictCloudComputeTime(TaskParametersMetadata taskParametersMetadata, DeviceParameters deviceParameters) {
+        KnnX knnX = new KnnX(taskParametersMetadata, deviceParameters);
         return regresor.predict(DataFrame.of(Collections.singletonList(knnX), KnnX.class))[0];
     }
 

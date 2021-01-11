@@ -4,9 +4,16 @@ import stanczyk.Stanczyk;
 
 public class DeviceParameters {
 
+    /*
+     * TODO :
+     *  Replace or fix enums
+     *  Add more metrics (SDK lvl, memory, ...)
+     */
+    private final long cpuCount;
+    private final long networkSpeed;
     private final long availMem;
     private final long totalMem;
-    private final int sdkScore;
+    private final long sdkScore;
     private final double batteryPercentage;
 
     public enum Cpu {
@@ -39,21 +46,24 @@ public class DeviceParameters {
         }
     }
 
-    /*
-     * TODO :
-     *  Replace or fix enums
-     *  Add more metrics (SDK lvl, memory, ...)
-     */
-    private final int cpuCount;
-    private final int networkSpeed;
 
-    public DeviceParameters(int cpuCount, int networkSpeed, long availMem, long totalMem, int sdkScore, double batteryPercentage) {
+
+    public DeviceParameters(long cpuCount, long networkSpeed, long availMem, long totalMem, long sdkScore, double batteryPercentage) {
         this.cpuCount = cpuCount;
         this.networkSpeed = networkSpeed;
         this.availMem = availMem;
         this.totalMem = totalMem;
         this.sdkScore = sdkScore;
         this.batteryPercentage = batteryPercentage;
+    }
+
+    public static DeviceParameters fromStanczykDto(Stanczyk.DeviceExecutorMetadata dto) {
+        return new DeviceParameters(dto.getCpuRating(),
+                dto.getNetworkRating(),
+                dto.getMemoryAvailable(),
+                dto.getTotalMemory(),
+                dto.getSdkScore(),
+                dto.getBatteryPercentage());
     }
 
     /*
@@ -71,6 +81,14 @@ public class DeviceParameters {
                 .build();
     }
 
+    public long getCpuCount() {
+        return cpuCount;
+    }
+
+    public long getNetworkSpeed() {
+        return networkSpeed;
+    }
+
     public long getAvailMem() {
         return availMem;
     }
@@ -79,19 +97,11 @@ public class DeviceParameters {
         return totalMem;
     }
 
-    public int getSdkScore() {
+    public long getSdkScore() {
         return sdkScore;
     }
 
     public double getBatteryPercentage() {
         return batteryPercentage;
-    }
-
-    public int getCpuCount() {
-        return cpuCount;
-    }
-
-    public int getNetworkSpeed() {
-        return networkSpeed;
     }
 }

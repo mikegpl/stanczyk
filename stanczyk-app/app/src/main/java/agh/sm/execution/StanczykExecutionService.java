@@ -2,6 +2,8 @@ package agh.sm.execution;
 
 import android.graphics.Bitmap;
 
+import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import agh.sm.exchange.StanczykExchangeService;
@@ -11,8 +13,9 @@ import agh.sm.detection.FaceDetectionTask;
 import agh.sm.metrics.MetricCollector;
 import agh.sm.prediction.ExecutionPredictor;
 import agh.sm.exchange.KnowledgeExchangeStrategy;
+import agh.sm.prediction.params.DeviceParameters;
 import agh.sm.prediction.params.KnnX;
-import agh.sm.prediction.params.TaskParameters;
+import agh.sm.prediction.params.TaskParametersMetadata;
 import stanczyk.Stanczyk;
 
 public class StanczykExecutionService {
@@ -40,18 +43,34 @@ public class StanczykExecutionService {
      */
     public void executeFor(Bitmap image) {
         FaceDetectionTask faceDetectionTask = new FaceDetectionTask(image);
-        TaskParameters taskParameters = new TaskParameters(faceDetectionTask);
+        TaskParametersMetadata taskParametersMetadata = new TaskParametersMetadata(faceDetectionTask);
 
         if (stanczykService.getStrategy() == KnowledgeExchangeStrategy.ALWAYS_BEFORE_REQUEST) {
             stanczykService.exchangeKnowledge();
-            // TODO : map local knowledge to KnnX and learn
+
             Stanczyk.DevicesKnowledge localKnowledge = stanczykService.getLocalKnowledge();
-            KnnX[] localKnowdlegeForKnnX = Arrays.stream(localKnowledge).map(KnnX::fromStanczykGetX).collect(Collectors.toList());
-            int[] localKnowdlegeForKnnY = Arrays.stream(localKnowledge).map(KnnX::fromStanczykGetY).collect(Collectors.toList());
-            executionPredictor.learn(localKnowdlegeForKnnX, localKnowdlegeForKnnY);
+            /*
+             * TODO : Mock Local Knowledge
+             */
+            executionPredictor.learnDeviceComputeEstimator(localKnowledge);
+//
+//            KnnX[] labels = localKnowledge.getDataList().stream()
+//                    .map(deviceExecutionMetadata -> {
+//                        DeviceParameters deviceParameters = DeviceParameters.fromStanczykDto(deviceExecutionMetadata.getDeviceExecutorMetadata());
+//                        TaskParametersMetadata taskMetadata = new TaskParametersMetadata(deviceExecutionMetadata.getTaskMetadata().getProblemSize());
+//                        return new KnnX(taskMetadata, deviceParameters);
+//                    })
+//                    .toArray(KnnX[]::new);
+//
+//            int[] features = localKnowledge.getDataList().stream()
+//                    .map((Function<Stanczyk.DeviceExecutionMetadata, Long>) Stanczyk.DeviceExecutionMetadata::getExecutionTimeMs)
+//                    .mapToInt(Long::intValue)
+//                    .toArray();
+
+//            executionPredictor.learn(labels, features);
         }
 
-        if (executionPredictor.predict(taskParameters, metricsCollector.getDeviceParams()).equals(ExecutionPredictor.ExecutionTarget.CLOUD)) {
+        if (executionPredictor.predict(taskParametersMetadata, metricsCollector.getDeviceParams()).equals(ExecutionPredictor.ExecutionTarget.CLOUD)) {
             cloudExecutor.executeFor(image);
         } else {
             localExecutor.executeFor(image);//313, 118, 802, 608

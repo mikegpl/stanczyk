@@ -10,7 +10,7 @@ public class FaceDetectionTask {
         this.image = image;
     }
 
-    public Bitmap getImage() {
-        return image;
+    public int getTaskSize() {
+        return image.getRowBytes() * image.getHeight();
     }
 }

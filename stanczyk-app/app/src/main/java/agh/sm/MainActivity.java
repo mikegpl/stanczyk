@@ -53,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        initializeServices();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -78,6 +77,9 @@ public class MainActivity extends AppCompatActivity {
                                 imageMaxHeight = rootView.getHeight() - findViewById(R.id.control).getHeight();
                             }
                         });
+
+        // Moved to the end, bcs of depnedecies from UI
+        initializeServices();
     }
 
     private void initializeServices() {
