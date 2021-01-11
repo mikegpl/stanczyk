@@ -125,12 +125,21 @@ class StanczykMetricCollector:
         self.server = ServerMetricCollector(maxsize=server_size)
 
     @staticmethod
-    def _extract_metrics(store):
-        metrics = dict(copy.deepcopy(store))
+    def _extract_device_metrics(store):
+        metrics = dict(copy.deepcopy(store.store))
         return {k: v for (k, v) in metrics.items() if isinstance(k, UUID)}
 
+    @staticmethod
+    def _extract_server_metrics(store):
+        #
+        # TODO : E 'UUID' object is not subscriptable
+        #
+        metrics = dict(copy.deepcopy(store.final_store))
+        # return {k: v for (k, v) in metrics.items() if isinstance(k, UUID)}
+        return {}
+
     def get_recent_metrics(self):
-        return self._extract_metrics(self.devices), self._extract_metrics(self.server)
+        return self._extract_device_metrics(self.devices), self._extract_server_metrics(self.server)
 
 
 class LRUCache(OrderedDict):

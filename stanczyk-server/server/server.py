@@ -28,6 +28,7 @@ class FacesGrpcService(StanczykTaskExecutionServiceServicer):
         return faces
 
     def FindFaces(self, request: FindRequest, context):
+        print(f"Received FindRequest from device: fileName={request.fileName}")
         request_id = uuid.uuid4()
         return FindResult(data=self._find_faces(request_id, request.base64Image))
 
@@ -46,9 +47,12 @@ class KnowledgeGrpcService(StanczykKnowledgeExchangeServiceServicer):
         self.metrics = metrics_collector
 
     def ExchangeKnowledge(self, request: DevicesKnowledge, context):
-        print(f"Received ${request} from device")
-        self.metrics.devices.insert_many(devices_dto_to_knowledge(request))
-        return knowledge_to_dto(*self.metrics.get_recent_metrics)
+        print(f"Received ExchangeKnowledge {request} from device")
+        knowledge = devices_dto_to_knowledge(request)
+        self.metrics.devices.insert_many(knowledge)
+        devices_metrics, server_metrics = self.metrics.get_recent_metrics()
+        return knowledge_to_dto(devices_metrics, server_metrics)
+
 
 
 class Server:
